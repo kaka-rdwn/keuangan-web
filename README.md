@@ -14,7 +14,12 @@ Proyek Keuangan Web adalah aplikasi manajemen arus kas (cashflow tracker) berbas
 
 - **Jejak Audit & Keamanan Data (Audit Trail & Soft Delete):** Merekam siapa yang membuat dan memperbarui data (created_by, updated_by) serta menggunakan deleted_at (soft delete) agar data yang dihapus tidak langsung hilang dari database.
 
+## Arsitektur Sistem
+
+Penjelasan mengenai pola arsitektur (*Clean Architecture*), keputusan desain (*Architecture Decision Records* / ADR), serta diagram alur data (*Data Flow Diagram* / DFD) dapat dilihat pada [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## Database
 
 Dokumentasi lengkap mengenai rancangan dan skema database (ERD, relasi antartabel, atribut, serta aturan presisi finansial) dapat dilihat pada [docs/DATABASE.md](docs/DATABASE.md).
+
 
