@@ -1,25 +1,51 @@
 # Keuangan Web
 
-Proyek Keuangan Web adalah aplikasi manajemen arus kas (cashflow tracker) berbasis web yang dirancang untuk mencatat, mengelompokkan, dan memantau transaksi keuangan (uang masuk dan keluar) secara terstruktur.
+Proyek **Keuangan Web** adalah aplikasi manajemen arus kas (*cashflow tracker*) berbasis web yang dirancang untuk mencatat, mengelompokkan, dan memantau transaksi keuangan (uang masuk dan keluar) secara terstruktur.
 
-## Tujuan & Fungsi Utama Sistem
+---
 
-- **Pencatatan Arus Kas (Cashflow Management):** Menjadi tempat mencatat seluruh transaksi keuangan melalui tabel cashflows. Sistem ini membedakan transaksi menjadi dua tipe utama: inflow (pemasukan) dan outflow (pengeluaran).
+## 🚀 Fitur Utama
 
-- **Kategorisasi Transaksi:** Setiap transaksi dikelompokkan berdasarkan entitas categories (misal: Gaji, Makanan, Transportasi, Hiburan) untuk mempermudah analisis laporan keuangan.
+- **Pencatatan Arus Kas (Cashflow Management):** Pencatatan transaksi keuangan yang dibedakan secara tegas menjadi dua tipe utama: `inflow` (pemasukan) dan `outflow` (pengeluaran).
+- **Kategorisasi Transaksi:** Pengelompokan transaksi berdasarkan kategori kustom (misal: Gaji, Makanan, Transportasi, Hiburan) untuk kemudahan laporan.
+- **Presisi Finansial (Integer/Sen):** Menggunakan tipe data `BIGINT` untuk menyimpan nominal uang dalam satuan terkecil (sen/dikali 100), menghindari *floating-point arithmetic bugs* serta *integer overflow*.
+- **Manajemen Akses & Keamanan (RBAC):** Otentikasi pengguna yang dilengkapi dengan peran (*Role*) dan hak akses (*Permission*) untuk membatasi aksi/menu di dalam aplikasi.
+- **Jejak Audit & Keamanan Data (Audit Trail & Soft Delete):** Merekam pengguna pembuat dan pembaru data (`created_by`, `updated_by`) serta menerapkan `deleted_at` (*soft delete*) untuk pemulihan data secara aman.
 
-- **Presisi Finansial (Integer/Sen):** Menggunakan tipe data bigint pada atribut amount untuk menyimpan nilai uang dalam satuan terkecil (sen), menghindari floating-point bug serta masalah integer overflow.
+---
 
-- **Manajemen Akses & Keamanan (RBAC):** Memiliki sistem otentikasi users yang dilengkapi dengan roles dan permissions untuk membatasi hak akses pengakses web (misal: mana menu untuk Admin, mana untuk User biasa).
+## 🛠️ Tech Stack
 
-- **Jejak Audit & Keamanan Data (Audit Trail & Soft Delete):** Merekam siapa yang membuat dan memperbarui data (created_by, updated_by) serta menggunakan deleted_at (soft delete) agar data yang dihapus tidak langsung hilang dari database.
+- **Framework Backend:** Laravel 13 (PHP 8.3+)
+- **Frontend Stack:** Inertia.js v3 & React 19
+- **Database:** MySQL / PostgreSQL (Default: SQLite)
+- **Architecture Pattern:** Clean Architecture, Action Classes, PHP 8 Backed Enums, & Custom Eloquent Casts
 
-## Arsitektur Sistem
+---
 
-Penjelasan mengenai pola arsitektur (*Clean Architecture*), keputusan desain (*Architecture Decision Records* / ADR), serta diagram alur data (*Data Flow Diagram* / DFD) dapat dilihat pada [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+## 📖 Dokumentasi Teknis
 
-## Database
+Detail teknis mengenai arsitektur, skema data, dan keputusan desain dapat diakses melalui dokumen terpisah berikut:
 
-Dokumentasi lengkap mengenai rancangan dan skema database (ERD, relasi antartabel, atribut, serta aturan presisi finansial) dapat dilihat pada [docs/DATABASE.md](docs/DATABASE.md).
+- **[Architecture & Design Specification](docs/ARCHITECTURE.md):** Penjelasan arsitektur sistem, *Architecture Decision Records* (ADR-001 s.d. ADR-004), serta *Data Flow Diagram* (DFD).
+- **[Database Schema Specification](docs/DATABASE.md):** Dokumentasi skema database lengkap (DBML, ERD Mermaid, relasi antartabel, dan aturan presisi data).
 
+---
+
+## ⚙️ Panduan Instalasi Lokal
+
+```bash
+# 1. Clone repository
+git clone https://github.com/kaka-rdwn/keuangan-web.git
+cd keuangan-web
+
+# 2. Jalankan perintah setup otomatis (Install dependencies, .env, key, & migration)
+composer run setup
+
+# 3. (Opsional) Jalankan seeder untuk data awal/sample
+php artisan db:seed
+
+# 4. Jalankan aplikasi (Server, Queue Listener, & Vite berjalan bersamaan)
+composer run dev
+```
 
