@@ -57,8 +57,8 @@ Tujuan utama dari pilihan arsitektur ini adalah:
 ### ADR-004: Role-Based Access Control (RBAC)
 * **Status:** Accepted
 * **Konteks:** Pembatasan hak akses menu dan aksi API berdasarkan peran pengguna.
-* **Keputusan:** Menerapkan struktur relasional `users` $\rightarrow$ `roles` $\rightarrow$ `permission_user` $\rightarrow$ `permissions`.
-* **Alasan:** Struktur RBAC ini standar, *scalable*, dan memisahkan dengan jelas antara entitas User, Peran (*Role*), dan Hak Akses (*Permission*).
+* **Keputusan:** Menerapkan pengelompokan peran via `roles` (`role_id` pada `users`) serta penetapan hak akses langsung (*direct permission assignment*) menggunakan tabel pivot `users` $\rightarrow$ `permission_user` $\rightarrow$ `permissions`.
+* **Alasan:** Struktur ini memberikan kemudahan pengelolaan peran utama (*Role*) sekaligus fleksibilitas penetapan hak akses spesifik (*Permission*) per pengguna.
 
 ---
 
