@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\PermissionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Permission extends Model
 {
+    /** @use HasFactory<PermissionFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -18,6 +20,8 @@ class Permission extends Model
 
     /**
      * Relasi Many-to-Many ke User via tabel pivot permission_user
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function users(): BelongsToMany
     {

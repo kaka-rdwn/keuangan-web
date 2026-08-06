@@ -56,6 +56,8 @@ class User extends Authenticatable implements PasskeyUser
 
     /**
      * Relasi ke Role (Belongs-to)
+     *
+     * @return BelongsTo<Role, $this>
      */
     public function role(): BelongsTo
     {
@@ -64,6 +66,8 @@ class User extends Authenticatable implements PasskeyUser
 
     /**
      * Relasi ke Permissions (Many-to-Many via permission_user)
+     *
+     * @return BelongsToMany<Permission, $this>
      */
     public function permissions(): BelongsToMany
     {
@@ -72,6 +76,8 @@ class User extends Authenticatable implements PasskeyUser
 
     /**
      * Relasi ke Kategori yang dibuat user
+     *
+     * @return HasMany<Category, $this>
      */
     public function categories(): HasMany
     {
@@ -80,6 +86,8 @@ class User extends Authenticatable implements PasskeyUser
 
     /**
      * Relasi ke Cashflow yang dibuat user
+     *
+     * @return HasMany<Cashflow, $this>
      */
     public function cashflows(): HasMany
     {

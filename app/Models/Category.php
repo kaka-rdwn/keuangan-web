@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
+    /** @use HasFactory<CategoryFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -21,6 +23,8 @@ class Category extends Model
 
     /**
      * Relasi ke User pembuat kategori
+     *
+     * @return BelongsTo<User, $this>
      */
     public function creator(): BelongsTo
     {
@@ -29,6 +33,8 @@ class Category extends Model
 
     /**
      * Relasi ke User pengubah kategori
+     *
+     * @return BelongsTo<User, $this>
      */
     public function updater(): BelongsTo
     {
@@ -37,6 +43,8 @@ class Category extends Model
 
     /**
      * Relasi ke Cashflows (One-to-Many)
+     *
+     * @return HasMany<Cashflow, $this>
      */
     public function cashflows(): HasMany
     {

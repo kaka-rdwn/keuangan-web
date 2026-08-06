@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\RoleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
 {
+    /** @use HasFactory<RoleFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -17,6 +19,8 @@ class Role extends Model
 
     /**
      * Relasi ke User (One-to-Many)
+     *
+     * @return HasMany<User, $this>
      */
     public function users(): HasMany
     {
