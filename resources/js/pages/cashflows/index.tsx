@@ -1,5 +1,4 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     ArrowDownLeft,
     ArrowUpRight,
@@ -9,6 +8,7 @@ import {
     Trash2,
     Wallet,
 } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Can } from '@/components/can';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
@@ -107,6 +107,7 @@ export default function CashflowsIndex({
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
+
             return;
         }
 
@@ -127,23 +128,24 @@ export default function CashflowsIndex({
         }, 350);
 
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [search, selectedType, selectedCategory, dateFrom, dateTo]);
 
     const handleFilterChange = (key: string, value: string) => {
-        const nextQuery = {
-            search: search || undefined,
-            type: key === 'type' ? (value !== 'all' ? value : undefined) : (selectedType !== 'all' ? selectedType : undefined),
-            category_id: key === 'category_id' ? (value !== 'all' ? value : undefined) : (selectedCategory !== 'all' ? selectedCategory : undefined),
-            date_from: key === 'date_from' ? (value || undefined) : (dateFrom || undefined),
-            date_to: key === 'date_to' ? (value || undefined) : (dateTo || undefined),
-        };
+        if (key === 'type') {
+            setSelectedType(value);
+        }
 
-        if (key === 'type') setSelectedType(value);
-        if (key === 'category_id') setSelectedCategory(value);
-        if (key === 'date_from') setDateFrom(value);
-        if (key === 'date_to') setDateTo(value);
+        if (key === 'category_id') {
+            setSelectedCategory(value);
+        }
 
-        router.get(cashflowsIndex.url({ query: nextQuery }), {}, { preserveState: true });
+        if (key === 'date_from') {
+            setDateFrom(value);
+        }
+
+        if (key === 'date_to') {
+            setDateTo(value);
+        }
     };
 
     const openCreateModal = () => {
@@ -188,6 +190,7 @@ export default function CashflowsIndex({
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (editingCashflow) {
             form.put(cashflowsUpdate.url(editingCashflow.id), {
                 onSuccess: () => setIsFormModalOpen(false),
@@ -200,7 +203,10 @@ export default function CashflowsIndex({
     };
 
     const handleDeleteConfirm = () => {
-        if (!deletingCashflow) return;
+        if (!deletingCashflow) {
+return;
+}
+
         router.delete(cashflowsDestroy.url(deletingCashflow.id), {
             onSuccess: () => setDeletingCashflow(null),
         });

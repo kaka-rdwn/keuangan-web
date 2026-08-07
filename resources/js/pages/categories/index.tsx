@@ -1,6 +1,6 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { Can } from '@/components/can';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { usePermission } from '@/hooks/use-permission';
 import {
     destroy as categoriesDestroy,
     index as categoriesIndex,
@@ -41,13 +40,9 @@ interface Props {
         sort?: string;
         direction?: string;
     };
-    canManage?: boolean;
 }
 
-export default function CategoriesIndex({ categories, filters, canManage }: Props) {
-    const { can } = usePermission();
-    const isManageable = canManage ?? can('category.manage');
-
+export default function CategoriesIndex({ categories, filters }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [selectedType, setSelectedType] = useState(filters.type ?? 'all');
     const isFirstRender = useRef(true);
@@ -63,10 +58,11 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
         description: '',
     });
 
-    // Debounced automatic search effect
+    // Debounced automatic search & filter effect
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
+
             return;
         }
 
@@ -84,20 +80,10 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
         }, 350);
 
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [search, selectedType]);
 
     const handleTypeFilterChange = (val: string) => {
         setSelectedType(val);
-        router.get(
-            categoriesIndex.url({
-                query: {
-                    search: search || undefined,
-                    type: val !== 'all' ? val : undefined,
-                },
-            }),
-            {},
-            { preserveState: true }
-        );
     };
 
     const openCreateModal = () => {
@@ -124,6 +110,7 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (editingCategory) {
             form.put(categoriesUpdate.url(editingCategory.id), {
                 onSuccess: () => setIsFormModalOpen(false),
@@ -136,7 +123,10 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
     };
 
     const handleDeleteConfirm = () => {
-        if (!deletingCategory) return;
+        if (!deletingCategory) {
+return;
+}
+
         router.delete(categoriesDestroy.url(deletingCategory.id), {
             onSuccess: () => setDeletingCategory(null),
         });

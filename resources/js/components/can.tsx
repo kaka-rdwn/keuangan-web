@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { type PermissionInput, type RoleInput, usePermission } from '@/hooks/use-permission';
+import {   usePermission } from '@/hooks/use-permission';
+import type {PermissionInput, RoleInput} from '@/hooks/use-permission';
 
 export interface CanProps {
     permission?: PermissionInput;

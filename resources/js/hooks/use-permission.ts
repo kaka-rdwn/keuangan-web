@@ -58,6 +58,7 @@ export function usePermission(): UsePermissionReturn {
         }
 
         const userPermissions = user.permissions ?? [];
+
         if (userPermissions.length === 0) {
             return false;
         }

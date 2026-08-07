@@ -1,5 +1,4 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { useMemo } from 'react';
 import {
     ArrowDownLeft,
     ArrowRight,
@@ -9,6 +8,7 @@ import {
     TrendingUp,
     Wallet,
 } from 'lucide-react';
+import { useMemo } from 'react';
 import {
     Bar,
     BarChart,
@@ -66,6 +66,7 @@ export default function Dashboard({
 }: DashboardProps) {
     const yearsList = useMemo(() => {
         const currentY = new Date().getFullYear();
+
         return Array.from({ length: 5 }, (_, i) => currentY - 2 + i);
     }, []);
 
