@@ -91,4 +91,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cashflow::class, 'created_by');
     }
+
+    /**
+     * Periksa apakah pengguna memiliki izin (permission) tertentu.
+     */
+    public function hasPermission(string $permission): bool
+    {
+        return $this->permissions->contains('name', $permission);
+    }
 }
