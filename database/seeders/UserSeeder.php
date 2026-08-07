@@ -35,9 +35,9 @@ class UserSeeder extends Seeder
 
         // 2. Regular User
         $user = User::firstOrCreate(
-            ['email' => 'kakaridwan@keuangan.test'],
+            ['email' => 'user@keuangan.test'],
             [
-                'name' => 'Kaka Ridwan',
+                'name' => 'Pengguna',
                 'password' => Hash::make('User#1234'),
                 'role_id' => $userRole?->id,
                 'email_verified_at' => now(),
