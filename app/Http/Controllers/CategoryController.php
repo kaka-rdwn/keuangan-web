@@ -15,7 +15,10 @@ use Inertia\Response;
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of financial categories with pagination, filtering, and search.
+     * Menampilkan daftar kategori keuangan beserta paginasi, pencarian, dan penyaringan tipe.
+     *
+     * @param  Request  $request  Objek HTTP request yang berisi kriteria pencarian dan filter.
+     * @return Response Komponen halaman Inertia untuk daftar kategori.
      */
     public function index(Request $request): Response
     {
@@ -63,7 +66,10 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created category in storage.
+     * Menyimpan kategori keuangan baru ke dalam basis data.
+     *
+     * @param  StoreCategoryRequest  $request  Objek request pembuatan kategori yang tervalidasi.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
      */
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
@@ -85,7 +91,11 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified category in storage.
+     * Memperbarui data kategori keuangan yang ditentukan di dalam basis data.
+     *
+     * @param  UpdateCategoryRequest  $request  Objek request pembaruan kategori yang tervalidasi.
+     * @param  Category  $category  Model kategori yang akan diperbarui.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
      */
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
@@ -107,7 +117,10 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified category from storage.
+     * Menghapus kategori keuangan yang ditentukan dari basis data jika tidak digunakan oleh transaksi.
+     *
+     * @param  Category  $category  Model kategori yang akan dihapus.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
      */
     public function destroy(Category $category): RedirectResponse
     {

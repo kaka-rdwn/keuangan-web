@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CashflowType;
 use App\Http\Requests\Cashflow\StoreCashflowRequest;
 use App\Http\Requests\Cashflow\UpdateCashflowRequest;
 use App\Models\Cashflow;
 use App\Models\Category;
+use App\Services\CashflowService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,19 @@ use Inertia\Response;
 class CashflowController extends Controller
 {
     /**
-     * Display a listing of cashflows with filters, summary, and pagination.
+     * Membuat instance CashflowController baru dengan menyuntikkan dependency service.
+     *
+     * @param  CashflowService  $cashflowService  Layanan bisnis untuk kalkulasi agregat arus kas.
+     */
+    public function __construct(
+        protected CashflowService $cashflowService
+    ) {}
+
+    /**
+     * Menampilkan daftar transaksi arus kas beserta filter, ringkasan saldo, dan paginasi.
+     *
+     * @param  Request  $request  Objek HTTP request yang berisi kriteria filter dan pencarian.
+     * @return Response Komponen halaman Inertia untuk daftar arus kas.
      */
     public function index(Request $request): Response
     {
@@ -53,11 +65,7 @@ class CashflowController extends Controller
             ->when($dateFrom, fn ($q, $from) => $q->whereDate('transaction_date', '>=', $from))
             ->when($dateTo, fn ($q, $to) => $q->whereDate('transaction_date', '<=', $to));
 
-        // Calculate summary from filtered records
-        $summaryQuery = clone $query;
-        $totalInflow = (int) (clone $summaryQuery)->where('type', CashflowType::INFLOW->value)->sum('amount');
-        $totalOutflow = (int) (clone $summaryQuery)->where('type', CashflowType::OUTFLOW->value)->sum('amount');
-        $netBalance = $totalInflow - $totalOutflow;
+        $summary = $this->cashflowService->calculateSummary($query);
 
         $cashflows = $query->with('category')
             ->orderBy($sort, $direction)
@@ -72,11 +80,7 @@ class CashflowController extends Controller
         return Inertia::render('cashflows/index', [
             'cashflows' => $cashflows,
             'categories' => $categories,
-            'summary' => [
-                'total_inflow' => $totalInflow,
-                'total_outflow' => $totalOutflow,
-                'net_balance' => $netBalance,
-            ],
+            'summary' => $summary,
             'filters' => [
                 'search' => $search,
                 'type' => $type,
@@ -95,20 +99,14 @@ class CashflowController extends Controller
     }
 
     /**
-     * Store a newly created cashflow transaction in storage.
+     * Menyimpan transaksi arus kas baru ke dalam penyimpanan basis data.
+     *
+     * @param  StoreCashflowRequest  $request  Objek request yang terverifikasi dan tervalidasi.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
      */
     public function store(StoreCashflowRequest $request): RedirectResponse
     {
         Gate::authorize('cashflow.create');
-
-        $category = Category::findOrFail((int) $request->input('category_id'));
-        $requestedType = $request->enum('type', CashflowType::class);
-
-        if ($category->type !== $requestedType) {
-            return back()->withErrors([
-                'category_id' => __('Tipe kategori tidak sesuai dengan tipe transaksi yang dipilih.'),
-            ]);
-        }
 
         DB::transaction(function () use ($request) {
             Cashflow::create([
@@ -126,20 +124,15 @@ class CashflowController extends Controller
     }
 
     /**
-     * Update the specified cashflow transaction in storage.
+     * Memperbarui data transaksi arus kas yang ditentukan di dalam basis data.
+     *
+     * @param  UpdateCashflowRequest  $request  Objek request pembaruan yang tervalidasi.
+     * @param  Cashflow  $cashflow  Model data transaksi arus kas yang akan diperbarui.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
      */
     public function update(UpdateCashflowRequest $request, Cashflow $cashflow): RedirectResponse
     {
         Gate::authorize('cashflow.edit');
-
-        $category = Category::findOrFail((int) $request->input('category_id'));
-        $requestedType = $request->enum('type', CashflowType::class);
-
-        if ($category->type !== $requestedType) {
-            return back()->withErrors([
-                'category_id' => __('Tipe kategori tidak sesuai dengan tipe transaksi yang dipilih.'),
-            ]);
-        }
 
         DB::transaction(function () use ($request, $cashflow) {
             $cashflow->update([
@@ -157,7 +150,10 @@ class CashflowController extends Controller
     }
 
     /**
-     * Remove the specified cashflow transaction from storage.
+     * Menghapus transaksi arus kas yang ditentukan dari basis data (Soft Delete).
+     *
+     * @param  Cashflow  $cashflow  Model data transaksi arus kas yang akan dihapus.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
      */
     public function destroy(Cashflow $cashflow): RedirectResponse
     {
