@@ -27,8 +27,12 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
 
-        // Dynamically check permissions via User model method
+        // Dynamically check permissions with Superadmin bypass for Admin role
         Gate::before(function (User $user, string $ability): ?true {
+            if ($user->role?->name === 'Admin') {
+                return true;
+            }
+
             if ($user->hasPermission($ability)) {
                 return true;
             }
