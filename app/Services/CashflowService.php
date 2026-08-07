@@ -10,7 +10,7 @@ class CashflowService
 {
     /**
      * Menghitung ringkasan agregat transaksi arus kas (total inflow, total outflow, dan saldo bersih)
-     * berdasarkan query transaksi yang telah difilter.
+     * berdasarkan query transaksi yang telah difilter (dalam unit Rupiah utuh).
      *
      * @param  Builder<Cashflow>  $query  Query model Cashflow dengan kriteria filter yang sudah diterapkan.
      * @return array{total_inflow: int, total_outflow: int, net_balance: int} Array berisi total pemasukan, total pengeluaran, dan saldo bersih.
@@ -18,8 +18,11 @@ class CashflowService
     public function calculateSummary(Builder $query): array
     {
         $summaryQuery = clone $query;
-        $totalInflow = (int) (clone $summaryQuery)->where('type', CashflowType::INFLOW->value)->sum('amount');
-        $totalOutflow = (int) (clone $summaryQuery)->where('type', CashflowType::OUTFLOW->value)->sum('amount');
+        $totalInflowCents = (int) (clone $summaryQuery)->where('type', CashflowType::INFLOW->value)->sum('amount');
+        $totalOutflowCents = (int) (clone $summaryQuery)->where('type', CashflowType::OUTFLOW->value)->sum('amount');
+
+        $totalInflow = (int) round($totalInflowCents / 100);
+        $totalOutflow = (int) round($totalOutflowCents / 100);
         $netBalance = $totalInflow - $totalOutflow;
 
         return [

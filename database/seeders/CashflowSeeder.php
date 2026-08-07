@@ -27,7 +27,7 @@ class CashflowSeeder extends Seeder
         $cashflows = [
             [
                 'name' => 'Gaji Bulanan Utama',
-                'amount' => 15000000 * 100,
+                'amount' => 15000000,
                 'type' => CashflowType::INFLOW,
                 'category_id' => $salaryCat?->id,
                 'transaction_date' => now()->startOfMonth()->toDateString(),
@@ -36,7 +36,7 @@ class CashflowSeeder extends Seeder
             ],
             [
                 'name' => 'Belanja Operasional Kantor',
-                'amount' => 2500000 * 100,
+                'amount' => 2500000,
                 'type' => CashflowType::OUTFLOW,
                 'category_id' => $operasionalCat?->id,
                 'transaction_date' => now()->toDateString(),

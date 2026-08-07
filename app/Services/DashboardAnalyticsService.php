@@ -49,28 +49,33 @@ class DashboardAnalyticsService
         $prevEnd = (clone $prevStart)->endOfMonth();
 
         // Metric Bulan Ini
-        $totalInflow = (int) Cashflow::query()
+        $totalInflowCents = (int) Cashflow::query()
             ->where('type', CashflowType::INFLOW->value)
             ->whereBetween('transaction_date', [$currentStart->toDateString(), $currentEnd->toDateString()])
             ->sum('amount');
 
-        $totalOutflow = (int) Cashflow::query()
+        $totalOutflowCents = (int) Cashflow::query()
             ->where('type', CashflowType::OUTFLOW->value)
             ->whereBetween('transaction_date', [$currentStart->toDateString(), $currentEnd->toDateString()])
             ->sum('amount');
 
+        $totalInflow = (int) round($totalInflowCents / 100);
+        $totalOutflow = (int) round($totalOutflowCents / 100);
         $netBalance = $totalInflow - $totalOutflow;
 
         // Metric Bulan Lalu (Untuk Month-over-Month Growth)
-        $prevInflow = (int) Cashflow::query()
+        $prevInflowCents = (int) Cashflow::query()
             ->where('type', CashflowType::INFLOW->value)
             ->whereBetween('transaction_date', [$prevStart->toDateString(), $prevEnd->toDateString()])
             ->sum('amount');
 
-        $prevOutflow = (int) Cashflow::query()
+        $prevOutflowCents = (int) Cashflow::query()
             ->where('type', CashflowType::OUTFLOW->value)
             ->whereBetween('transaction_date', [$prevStart->toDateString(), $prevEnd->toDateString()])
             ->sum('amount');
+
+        $prevInflow = (int) round($prevInflowCents / 100);
+        $prevOutflow = (int) round($prevOutflowCents / 100);
 
         $inflowGrowth = $prevInflow > 0
             ? round((($totalInflow - $prevInflow) / $prevInflow) * 100, 1)

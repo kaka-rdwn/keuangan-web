@@ -41,7 +41,7 @@ test('user with create permission can store cashflow transaction', function () {
     $response->assertRedirect();
     $this->assertDatabaseHas('cashflows', [
         'name' => 'Bonus Projek',
-        'amount' => 5000000,
+        'amount' => 500000000,
         'type' => CashflowType::INFLOW->value,
         'category_id' => $category->id,
     ]);
@@ -98,7 +98,7 @@ test('user with edit permission can update cashflow transaction', function () {
     $this->assertDatabaseHas('cashflows', [
         'id' => $cashflow->id,
         'name' => 'Beli Kertas & Tinta',
-        'amount' => 250000,
+        'amount' => 25000000,
     ]);
 });
 
