@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('cashflows', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->bigInteger('amount'); // Nominal Sen (Presisi Finansial)
+            $table->bigInteger('amount'); // Nominal Sen / Rupiah
             $table->string('type', 20); // inflow / outflow
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->date('transaction_date')->nullable();
             $table->text('description')->nullable();
 
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();

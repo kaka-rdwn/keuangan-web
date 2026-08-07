@@ -17,12 +17,16 @@ use Illuminate\Support\Carbon;
  * @property int $amount
  * @property CashflowType $type
  * @property int|null $category_id
+ * @property Carbon|string|null $transaction_date
  * @property string|null $description
  * @property int|null $created_by
  * @property int|null $updated_by
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Category|null $category
+ * @property-read User|null $creator
+ * @property-read User|null $updater
  */
 class Cashflow extends Model
 {
@@ -34,6 +38,7 @@ class Cashflow extends Model
         'amount',
         'type',
         'category_id',
+        'transaction_date',
         'description',
         'created_by',
         'updated_by',
@@ -49,6 +54,7 @@ class Cashflow extends Model
         return [
             'amount' => MoneyCast::class,
             'type' => CashflowType::class,
+            'transaction_date' => 'date:Y-m-d',
         ];
     }
 

@@ -22,6 +22,7 @@ class CashflowFactory extends Factory
             'name' => fake()->sentence(3),
             'amount' => fake()->numberBetween(10000, 5000000),
             'type' => fake()->randomElement([CashflowType::INFLOW, CashflowType::OUTFLOW]),
+            'transaction_date' => fake()->date(),
             'description' => fake()->sentence(),
         ];
     }

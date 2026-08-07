@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Folder, LayoutGrid } from 'lucide-react';
+import { ArrowLeftRight, Folder, LayoutGrid } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -13,6 +13,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as cashflowsIndex } from '@/routes/cashflows';
 import { index as categoriesIndex } from '@/routes/categories';
 import type { NavItem } from '@/types';
 
@@ -21,6 +22,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Arus Kas',
+        href: cashflowsIndex(),
+        icon: ArrowLeftRight,
     },
     {
         title: 'Kategori',

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\CashflowType;
 use App\Models\Cashflow;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -20,18 +21,25 @@ class CashflowSeeder extends Seeder
             return;
         }
 
+        $salaryCat = Category::where('name', 'like', '%Gaji%')->first();
+        $operasionalCat = Category::where('name', 'like', '%Operasional%')->first();
+
         $cashflows = [
             [
-                'name' => 'Gaji Bulanan',
+                'name' => 'Gaji Bulanan Utama',
                 'amount' => 15000000,
                 'type' => CashflowType::INFLOW,
+                'category_id' => $salaryCat?->id,
+                'transaction_date' => now()->startOfMonth()->toDateString(),
                 'description' => 'Pemasukan gaji bulanan utama',
                 'created_by' => $admin->id,
             ],
             [
-                'name' => 'Belanja Operasional',
+                'name' => 'Belanja Operasional Kantor',
                 'amount' => 2500000,
                 'type' => CashflowType::OUTFLOW,
+                'category_id' => $operasionalCat?->id,
+                'transaction_date' => now()->toDateString(),
                 'description' => 'Pengeluaran kebutuhan operasional',
                 'created_by' => $admin->id,
             ],

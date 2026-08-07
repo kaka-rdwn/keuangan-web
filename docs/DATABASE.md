@@ -153,6 +153,7 @@ Tabel utama pencatatan transaksi uang masuk (*inflow*) dan uang keluar (*outflow
 | `amount` | `bigint` | Nominal transaksi dalam satuan sen (integer) |
 | `type` | `varchar` | Tipe transaksi (`inflow` / `outflow`) |
 | `category_id` | `bigint` | Foreign Key mengacu pada `categories.id` |
+| `transaction_date` | `date` | Tanggal terjadinya transaksi |
 | `description` | `text` | Catatan atau rincian tambahan transaksi |
 | `created_by` | `bigint` | Foreign Key pembuat transaksi (`users.id`) |
 | `updated_by` | `bigint` | Foreign Key pembaru transaksi (`users.id`) |
