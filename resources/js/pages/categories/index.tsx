@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
+import { Can } from '@/components/can';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { usePermission } from '@/hooks/use-permission';
 import {
     destroy as categoriesDestroy,
     index as categoriesIndex,
@@ -39,10 +41,13 @@ interface Props {
         sort?: string;
         direction?: string;
     };
-    canManage: boolean;
+    canManage?: boolean;
 }
 
 export default function CategoriesIndex({ categories, filters, canManage }: Props) {
+    const { can } = usePermission();
+    const isManageable = canManage ?? can('category.manage');
+
     const [search, setSearch] = useState(filters.search ?? '');
     const [selectedType, setSelectedType] = useState(filters.type ?? 'all');
     const isFirstRender = useRef(true);
@@ -149,12 +154,12 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
                                 Kelola kategori pemasukan dan pengeluaran transaksi keuangan Anda.
                             </p>
                         </div>
-                        {canManage && (
+                        <Can permission="category.manage">
                             <Button onClick={openCreateModal} className="gap-2">
                                 <Plus className="h-4 w-4" />
                                 Tambah Kategori
                             </Button>
-                        )}
+                        </Can>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Filters & Search */}
@@ -216,7 +221,10 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
                                                     {category.description || '-'}
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
-                                                    {canManage ? (
+                                                    <Can
+                                                        permission="category.manage"
+                                                        fallback={<span className="text-xs font-mono text-muted-foreground">No access</span>}
+                                                    >
                                                         <div className="flex items-center justify-end gap-2">
                                                             <Button
                                                                 variant="ghost"
@@ -235,9 +243,7 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
                                                                 <Trash2 className="h-4 w-4 text-destructive" />
                                                             </Button>
                                                         </div>
-                                                    ) : (
-                                                        <span className="text-xs font-mono text-muted-foreground">No access</span>
-                                                    )}
+                                                    </Can>
                                                 </td>
                                             </tr>
                                         ))

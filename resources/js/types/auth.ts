@@ -1,4 +1,4 @@
-export type User = {
+export interface User {
     id: number;
     name: string;
     email: string;
@@ -10,11 +10,18 @@ export type User = {
     created_at?: string;
     updated_at?: string;
     [key: string]: unknown;
-};
+}
 
-export type Auth = {
+export interface Auth {
     user: User | null;
-};
+}
+
+export interface PageProps {
+    auth: Auth;
+    name?: string;
+    sidebarOpen?: boolean;
+    [key: string]: unknown;
+}
 
 export type TwoFactorSetupData = {
     svg: string;
