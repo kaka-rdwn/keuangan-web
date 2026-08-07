@@ -1,5 +1,5 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +45,7 @@ interface Props {
 export default function CategoriesIndex({ categories, filters, canManage }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [selectedType, setSelectedType] = useState(filters.type ?? 'all');
+    const isFirstRender = useRef(true);
 
     // Modal states
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -57,19 +58,28 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
         description: '',
     });
 
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.get(
-            categoriesIndex.url({
-                query: {
-                    search: search || undefined,
-                    type: selectedType !== 'all' ? selectedType : undefined,
-                },
-            }),
-            {},
-            { preserveState: true }
-        );
-    };
+    // Debounced automatic search effect
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            router.get(
+                categoriesIndex.url({
+                    query: {
+                        search: search || undefined,
+                        type: selectedType !== 'all' ? selectedType : undefined,
+                    },
+                }),
+                {},
+                { preserveState: true, replace: true }
+            );
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const handleTypeFilterChange = (val: string) => {
         setSelectedType(val);
@@ -148,7 +158,7 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Filters & Search */}
-                        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
@@ -171,10 +181,7 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Button type="submit" variant="secondary">
-                                Cari
-                            </Button>
-                        </form>
+                        </div>
 
                         {/* Table */}
                         <div className="overflow-hidden rounded-md border border-sidebar-border/70 dark:border-sidebar-border">
@@ -196,11 +203,11 @@ export default function CategoriesIndex({ categories, filters, canManage }: Prop
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {category.type === 'inflow' ? (
-                                                        <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100">
+                                                        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
                                                             Pemasukan
                                                         </Badge>
                                                     ) : (
-                                                        <Badge className="bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border-rose-200 dark:border-rose-800 hover:bg-rose-100">
+                                                        <Badge className="bg-rose-100 text-rose-800 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 border-rose-200 dark:border-rose-800">
                                                             Pengeluaran
                                                         </Badge>
                                                     )}
