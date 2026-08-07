@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\CashflowType;
 use App\Models\Cashflow;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,10 @@ class CashflowFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->sentence(3),
+            'amount' => fake()->numberBetween(10000, 5000000),
+            'type' => fake()->randomElement([CashflowType::INFLOW, CashflowType::OUTFLOW]),
+            'description' => fake()->sentence(),
         ];
     }
 }

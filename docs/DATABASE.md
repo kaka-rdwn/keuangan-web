@@ -136,6 +136,7 @@ Menyimpan pengelompokan transaksi (contoh: Gaji, Makanan, Transportasi, Hiburan)
 | --- | --- | --- |
 | `id` | `bigint` | Primary Key |
 | `name` | `varchar` | Nama kategori |
+| `type` | `varchar` | Tipe kategori (`inflow` / `outflow`) |
 | `description` | `varchar` | Penjelasan singkat kategori |
 | `created_by` | `bigint` | Foreign Key pengguna pembuat data (`users.id`) |
 | `updated_by` | `bigint` | Foreign Key pengguna pembaru data (`users.id`) |
