@@ -290,16 +290,18 @@ return;
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            asChild
-                                                            title="Kelola Permission"
-                                                        >
-                                                            <Link href={`/users/${u.id}/permissions`}>
-                                                                <Key className="h-4 w-4 text-amber-600 dark:text-amber-400 hover:text-amber-700" />
-                                                            </Link>
-                                                        </Button>
+                                                        {u.role?.name !== 'Admin' && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                asChild
+                                                                title="Kelola Permission"
+                                                            >
+                                                                <Link href={`/users/${u.id}/permissions`}>
+                                                                    <Key className="h-4 w-4 text-amber-600 dark:text-amber-400 hover:text-amber-700" />
+                                                                </Link>
+                                                            </Button>
+                                                        )}
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
