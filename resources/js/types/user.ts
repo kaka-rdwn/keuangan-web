@@ -52,3 +52,28 @@ export interface UserForm {
     role: string;
     password?: string;
 }
+
+export interface PermissionItem {
+    id: number;
+    name: string;
+    display_name: string;
+    description?: string | null;
+}
+
+export interface GroupedPermission {
+    key: string;
+    name: string;
+    items: PermissionItem[];
+}
+
+export interface UserPermissionsProps {
+    user: {
+        id: number;
+        name: string;
+        email: string;
+        role_id?: number | null;
+    };
+    userRole?: string | null;
+    groupedPermissions: GroupedPermission[];
+    userPermissionIds: number[];
+}

@@ -172,4 +172,73 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
+
+    /**
+     * Menampilkan halaman kelola izin (permission) langsung untuk pengguna tertentu.
+     *
+     * @param  User  $user  Instance pengguna yang permission-nya akan dikelola.
+     * @return Response Komponen halaman Inertia untuk kelola permission pengguna.
+     */
+    public function permissions(User $user): Response
+    {
+        Gate::authorize('user.manage');
+
+        $user->load('role');
+
+        $permissions = Permission::select('id', 'name', 'display_name', 'description')->get();
+
+        $groupedPermissions = $permissions->groupBy(function ($permission) {
+            return explode('.', $permission->name)[0];
+        })->map(function ($items, $groupKey) {
+            $groupName = match ($groupKey) {
+                'cashflow' => 'Manajemen Cashflow',
+                'category' => 'Kategori Keuangan',
+                'user' => 'Manajemen Pengguna',
+                default => ucfirst($groupKey),
+            };
+
+            return [
+                'key' => $groupKey,
+                'name' => $groupName,
+                'items' => $items->values(),
+            ];
+        })->values();
+
+        $userPermissionIds = $user->permissions()->pluck('permissions.id')->toArray();
+
+        return Inertia::render('users/permissions', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+            ],
+            'userRole' => $user->role?->name,
+            'groupedPermissions' => $groupedPermissions,
+            'userPermissionIds' => $userPermissionIds,
+        ]);
+    }
+
+    /**
+     * Memperbarui izin (permission) langsung pengguna di database.
+     *
+     * @param  Request  $request  Objek HTTP request yang berisi array ID permission.
+     * @param  User  $user  Instance pengguna yang permission-nya diperbarui.
+     * @return RedirectResponse Redirect ke halaman indeks pengguna dengan pesan sukses.
+     */
+    public function updatePermissions(Request $request, User $user): RedirectResponse
+    {
+        Gate::authorize('user.manage');
+
+        $validated = $request->validate([
+            'permissions' => 'present|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        DB::transaction(function () use ($user, $validated) {
+            $user->permissions()->sync($validated['permissions']);
+        });
+
+        return redirect()->route('users.index')->with('success', 'Permission pengguna berhasil diperbarui.');
+    }
 }

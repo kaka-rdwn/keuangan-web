@@ -1,6 +1,7 @@
 <?php
 
 use App\Mail\UserCreatedMail;
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -94,6 +95,42 @@ test('admin can update user details and role', function () {
         'name' => 'Nama Baru',
         'email' => 'newemail@keuangan.test',
     ]);
+});
+
+test('admin can view user permissions page', function () {
+    $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+    $admin = User::factory()->create(['role_id' => $adminRole->id]);
+    $targetUser = User::factory()->create();
+
+    $this->actingAs($admin)
+        ->get(route('users.permissions.edit', $targetUser))
+        ->assertOk();
+});
+
+test('admin can update direct permissions for user', function () {
+    $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+    $admin = User::factory()->create(['role_id' => $adminRole->id]);
+    $targetUser = User::factory()->create();
+
+    $permission1 = Permission::firstOrCreate(
+        ['name' => 'cashflow.view'],
+        ['display_name' => 'Lihat Cashflow']
+    );
+    $permission2 = Permission::firstOrCreate(
+        ['name' => 'category.view'],
+        ['display_name' => 'Lihat Kategori']
+    );
+
+    $response = $this->actingAs($admin)
+        ->put(route('users.permissions.update', $targetUser), [
+            'permissions' => [$permission1->id, $permission2->id],
+        ]);
+
+    $response->assertRedirect(route('users.index'));
+    $response->assertSessionHas('success', 'Permission pengguna berhasil diperbarui.');
+
+    expect($targetUser->permissions()->pluck('permissions.id')->toArray())
+        ->toEqualCanonicalizing([$permission1->id, $permission2->id]);
 });
 
 test('user cannot delete their own account via user management', function () {
