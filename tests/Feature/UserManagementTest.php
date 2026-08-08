@@ -3,6 +3,7 @@
 use App\Mail\UserCreatedMail;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 test('users index page can be rendered for admin user', function () {
@@ -23,7 +24,7 @@ test('regular user without user.manage permission cannot access users index', fu
         ->assertForbidden();
 });
 
-test('admin can store new user and trigger credential email', function () {
+test('admin can store new user with null email_verified_at and trigger credential email', function () {
     Mail::fake();
 
     $adminRole = Role::firstOrCreate(['name' => 'Admin']);
@@ -42,11 +43,31 @@ test('admin can store new user and trigger credential email', function () {
     $this->assertDatabaseHas('users', [
         'name' => 'Staf Baru',
         'email' => 'stafbaru@keuangan.test',
+        'email_verified_at' => null,
     ]);
 
     Mail::assertSent(UserCreatedMail::class, function ($mail) {
         return $mail->hasTo('stafbaru@keuangan.test');
     });
+});
+
+test('user with null email_verified_at gets verified automatically upon first login', function () {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+        'password' => Hash::make('Password#123'),
+    ]);
+
+    expect($user->email_verified_at)->toBeNull();
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'Password#123',
+    ]);
+
+    $response->assertRedirect(route('dashboard', absolute: false));
+
+    $user->refresh();
+    expect($user->email_verified_at)->not->toBeNull();
 });
 
 test('admin can update user details and role', function () {

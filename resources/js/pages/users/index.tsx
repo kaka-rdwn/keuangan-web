@@ -242,7 +242,7 @@ return;
                                         <th className="px-4 py-3 font-semibold">Pengguna</th>
                                         <th className="px-4 py-3 font-semibold">Email</th>
                                         <th className="px-4 py-3 font-semibold">Peran (Role)</th>
-                                        <th className="px-4 py-3 font-semibold">Status Email</th>
+                                        <th className="px-4 py-3 font-semibold">Status</th>
                                         <th className="px-4 py-3 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -279,13 +279,13 @@ return;
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {u.email_verified_at ? (
-                                                        <span className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-                                                            Terverifikasi
-                                                        </span>
+                                                        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
+                                                            Aktif
+                                                        </Badge>
                                                     ) : (
-                                                        <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-                                                            Belum Verifikasi
-                                                        </span>
+                                                        <Badge variant="outline" className="bg-amber-50 text-amber-700 hover:bg-amber-50 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+                                                            Belum Aktif
+                                                        </Badge>
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3 text-right">

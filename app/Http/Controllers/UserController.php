@@ -82,7 +82,7 @@ class UserController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($plainPassword),
                 'role_id' => $role->id,
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ]);
 
             if ($role->name === 'Admin') {
