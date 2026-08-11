@@ -1,14 +1,12 @@
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Can } from '@/components/can';
-import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -16,7 +14,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -25,12 +22,12 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
+    create as categoriesCreate,
     destroy as categoriesDestroy,
+    edit as categoriesEdit,
     index as categoriesIndex,
-    store as categoriesStore,
-    update as categoriesUpdate,
 } from '@/routes/categories';
-import type { CashflowType, Category, CategoryForm, PaginatedCategories } from '@/types/category';
+import type { Category, PaginatedCategories } from '@/types/category';
 
 interface Props {
     categories: PaginatedCategories;
@@ -47,16 +44,7 @@ export default function CategoriesIndex({ categories, filters }: Props) {
     const [selectedType, setSelectedType] = useState(filters.type ?? 'all');
     const isFirstRender = useRef(true);
 
-    // Modal states
-    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
-
-    const form = useForm<CategoryForm>({
-        name: '',
-        type: 'outflow',
-        description: '',
-    });
 
     // Debounced automatic search & filter effect
     useEffect(() => {
@@ -102,46 +90,10 @@ export default function CategoriesIndex({ categories, filters }: Props) {
         );
     };
 
-    const openCreateModal = () => {
-        setEditingCategory(null);
-        form.setData({
-            name: '',
-            type: 'outflow',
-            description: '',
-        });
-        form.clearErrors();
-        setIsFormModalOpen(true);
-    };
-
-    const openEditModal = (category: Category) => {
-        setEditingCategory(category);
-        form.setData({
-            name: category.name,
-            type: category.type,
-            description: category.description ?? '',
-        });
-        form.clearErrors();
-        setIsFormModalOpen(true);
-    };
-
-    const handleFormSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (editingCategory) {
-            form.put(categoriesUpdate.url(editingCategory.id), {
-                onSuccess: () => setIsFormModalOpen(false),
-            });
-        } else {
-            form.post(categoriesStore.url(), {
-                onSuccess: () => setIsFormModalOpen(false),
-            });
-        }
-    };
-
     const handleDeleteConfirm = () => {
         if (!deletingCategory) {
-return;
-}
+            return;
+        }
 
         router.delete(categoriesDestroy.url(deletingCategory.id), {
             onSuccess: () => setDeletingCategory(null),
@@ -161,9 +113,11 @@ return;
                             </p>
                         </div>
                         <Can permission="category.create">
-                            <Button onClick={openCreateModal} className="gap-2">
-                                <Plus className="h-4 w-4" />
-                                Tambah Kategori
+                            <Button asChild className="gap-2">
+                                <Link href={categoriesCreate.url()}>
+                                    <Plus className="h-4 w-4" />
+                                    Tambah Kategori
+                                </Link>
                             </Button>
                         </Can>
                     </CardHeader>
@@ -256,10 +210,12 @@ return;
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                onClick={() => openEditModal(category)}
+                                                                asChild
                                                                 title="Ubah"
                                                             >
-                                                                <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                                <Link href={categoriesEdit.url(category.id)}>
+                                                                    <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                                </Link>
                                                             </Button>
                                                         </Can>
                                                         <Can permission="category.delete">
@@ -310,73 +266,6 @@ return;
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Create & Edit Modal */}
-            <Dialog open={isFormModalOpen} onOpenChange={setIsFormModalOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>
-                            {editingCategory ? 'Edit Kategori' : 'Tambah Kategori Baru'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            Isi rincian kategori di bawah ini. Klik Simpan setelah selesai.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <form onSubmit={handleFormSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Nama Kategori</Label>
-                            <Input
-                                id="name"
-                                value={form.data.name}
-                                onChange={(e) => form.setData('name', e.target.value)}
-                                placeholder="Contoh: Gaji, Operasional, Transportasi"
-                                required
-                            />
-                            <InputError message={form.errors.name} />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="type">Tipe Kategori</Label>
-                            <Select
-                                value={form.data.type}
-                                onValueChange={(val: CashflowType) => form.setData('type', val)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Pilih Tipe" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="inflow">Pemasukan (Inflow)</SelectItem>
-                                    <SelectItem value="outflow">Pengeluaran (Outflow)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.type} />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Deskripsi (Opsional)</Label>
-                            <Input
-                                id="description"
-                                value={form.data.description}
-                                onChange={(e) => form.setData('description', e.target.value)}
-                                placeholder="Keterangan singkat kategori..."
-                            />
-                            <InputError message={form.errors.description} />
-                        </div>
-
-                        <DialogFooter className="gap-2 sm:gap-0">
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline">
-                                    Batal
-                                </Button>
-                            </DialogClose>
-                            <Button type="submit" disabled={form.processing}>
-                                {form.processing ? 'Menyimpan...' : 'Simpan'}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
 
             {/* Delete Confirmation Modal */}
             <Dialog open={!!deletingCategory} onOpenChange={(open) => !open && setDeletingCategory(null)}>

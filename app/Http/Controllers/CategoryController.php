@@ -68,10 +68,22 @@ class CategoryController extends Controller
     }
 
     /**
+     * Menampilkan halaman formulir pembuatan kategori keuangan baru.
+     *
+     * @return Response Komponen halaman Inertia untuk pembuatan kategori.
+     */
+    public function create(): Response
+    {
+        Gate::authorize('category.create');
+
+        return Inertia::render('categories/create');
+    }
+
+    /**
      * Menyimpan kategori keuangan baru ke dalam basis data.
      *
      * @param  StoreCategoryRequest  $request  Objek request pembuatan kategori yang tervalidasi.
-     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
+     * @return RedirectResponse Respons pengalihan ke daftar kategori dengan notifikasi flash.
      */
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
@@ -89,7 +101,22 @@ class CategoryController extends Controller
             'message' => __('Kategori berhasil ditambahkan.'),
         ]);
 
-        return back();
+        return to_route('categories.index');
+    }
+
+    /**
+     * Menampilkan halaman formulir penyuntingan kategori keuangan.
+     *
+     * @param  Category  $category  Model kategori yang akan disunting.
+     * @return Response Komponen halaman Inertia untuk penyuntingan kategori.
+     */
+    public function edit(Category $category): Response
+    {
+        Gate::authorize('category.edit');
+
+        return Inertia::render('categories/edit', [
+            'category' => $category,
+        ]);
     }
 
     /**
@@ -97,7 +124,7 @@ class CategoryController extends Controller
      *
      * @param  UpdateCategoryRequest  $request  Objek request pembaruan kategori yang tervalidasi.
      * @param  Category  $category  Model kategori yang akan diperbarui.
-     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
+     * @return RedirectResponse Respons pengalihan ke daftar kategori dengan notifikasi flash.
      */
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
@@ -115,14 +142,14 @@ class CategoryController extends Controller
             'message' => __('Kategori berhasil diperbarui.'),
         ]);
 
-        return back();
+        return to_route('categories.index');
     }
 
     /**
      * Menghapus kategori keuangan yang ditentukan dari basis data jika tidak digunakan oleh transaksi.
      *
      * @param  Category  $category  Model kategori yang akan dihapus.
-     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash.
      */
     public function destroy(Category $category): RedirectResponse
     {

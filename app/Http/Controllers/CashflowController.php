@@ -99,10 +99,29 @@ class CashflowController extends Controller
     }
 
     /**
+     * Menampilkan halaman formulir pembuatan transaksi arus kas baru.
+     *
+     * @return Response Komponen halaman Inertia untuk pembuatan transaksi arus kas.
+     */
+    public function create(): Response
+    {
+        Gate::authorize('cashflow.create');
+
+        $categories = Category::query()
+            ->select(['id', 'name', 'type'])
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('cashflows/create', [
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
      * Menyimpan transaksi arus kas baru ke dalam penyimpanan basis data.
      *
      * @param  StoreCashflowRequest  $request  Objek request yang terverifikasi dan tervalidasi.
-     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
+     * @return RedirectResponse Respons pengalihan ke daftar arus kas dengan notifikasi flash.
      */
     public function store(StoreCashflowRequest $request): RedirectResponse
     {
@@ -120,7 +139,28 @@ class CashflowController extends Controller
             'message' => __('Transaksi berhasil dicatat.'),
         ]);
 
-        return back();
+        return to_route('cashflows.index');
+    }
+
+    /**
+     * Menampilkan halaman formulir penyuntingan transaksi arus kas.
+     *
+     * @param  Cashflow  $cashflow  Model data transaksi arus kas yang akan disunting.
+     * @return Response Komponen halaman Inertia untuk penyuntingan transaksi arus kas.
+     */
+    public function edit(Cashflow $cashflow): Response
+    {
+        Gate::authorize('cashflow.edit');
+
+        $categories = Category::query()
+            ->select(['id', 'name', 'type'])
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('cashflows/edit', [
+            'cashflow' => $cashflow->load('category'),
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -128,7 +168,7 @@ class CashflowController extends Controller
      *
      * @param  UpdateCashflowRequest  $request  Objek request pembaruan yang tervalidasi.
      * @param  Cashflow  $cashflow  Model data transaksi arus kas yang akan diperbarui.
-     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
+     * @return RedirectResponse Respons pengalihan ke daftar arus kas dengan notifikasi flash.
      */
     public function update(UpdateCashflowRequest $request, Cashflow $cashflow): RedirectResponse
     {
@@ -146,14 +186,14 @@ class CashflowController extends Controller
             'message' => __('Transaksi berhasil diperbarui.'),
         ]);
 
-        return back();
+        return to_route('cashflows.index');
     }
 
     /**
      * Menghapus transaksi arus kas yang ditentukan dari basis data (Soft Delete).
      *
      * @param  Cashflow  $cashflow  Model data transaksi arus kas yang akan dihapus.
-     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash toast.
+     * @return RedirectResponse Respons pengalihan kembali dengan notifikasi flash.
      */
     public function destroy(Cashflow $cashflow): RedirectResponse
     {

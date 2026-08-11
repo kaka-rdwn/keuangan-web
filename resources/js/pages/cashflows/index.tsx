@@ -1,4 +1,4 @@
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     ArrowDownLeft,
     ArrowUpRight,
@@ -8,15 +8,13 @@ import {
     Trash2,
     Wallet,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Can } from '@/components/can';
-import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -24,7 +22,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -33,13 +30,13 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
+    create as cashflowsCreate,
     destroy as cashflowsDestroy,
+    edit as cashflowsEdit,
     index as cashflowsIndex,
-    store as cashflowsStore,
-    update as cashflowsUpdate,
 } from '@/routes/cashflows';
-import type { Cashflow, CashflowForm, CashflowSummary, PaginatedCashflows } from '@/types/cashflow';
-import type { CashflowType, Category } from '@/types/category';
+import type { Cashflow, CashflowSummary, PaginatedCashflows } from '@/types/cashflow';
+import type { Category } from '@/types/category';
 
 interface Props {
     cashflows: PaginatedCashflows;
@@ -82,26 +79,7 @@ export default function CashflowsIndex({
     const [dateTo, setDateTo] = useState(filters.date_to ?? '');
     const isFirstRender = useRef(true);
 
-    // Modal states
-    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-    const [editingCashflow, setEditingCashflow] = useState<Cashflow | null>(null);
     const [deletingCashflow, setDeletingCashflow] = useState<Cashflow | null>(null);
-
-    const todayDate = new Date().toISOString().split('T')[0];
-
-    const form = useForm<CashflowForm>({
-        name: '',
-        type: 'outflow',
-        category_id: '',
-        amount: '',
-        transaction_date: todayDate,
-        description: '',
-    });
-
-    // Dynamically filter category options based on chosen form type
-    const availableCategoriesForForm = useMemo(() => {
-        return categories.filter((cat) => cat.type === form.data.type);
-    }, [categories, form.data.type]);
 
     // Debounced search effect
     useEffect(() => {
@@ -148,64 +126,10 @@ export default function CashflowsIndex({
         }
     };
 
-    const openCreateModal = () => {
-        setEditingCashflow(null);
-        const defaultType: CashflowType = 'outflow';
-        const defaultCat = categories.find((c) => c.type === defaultType);
-
-        form.setData({
-            name: '',
-            type: defaultType,
-            category_id: defaultCat ? defaultCat.id.toString() : '',
-            amount: '',
-            transaction_date: todayDate,
-            description: '',
-        });
-        form.clearErrors();
-        setIsFormModalOpen(true);
-    };
-
-    const openEditModal = (cashflow: Cashflow) => {
-        setEditingCashflow(cashflow);
-        form.setData({
-            name: cashflow.name,
-            type: cashflow.type,
-            category_id: cashflow.category_id ? cashflow.category_id.toString() : '',
-            amount: cashflow.amount,
-            transaction_date: cashflow.transaction_date ?? todayDate,
-            description: cashflow.description ?? '',
-        });
-        form.clearErrors();
-        setIsFormModalOpen(true);
-    };
-
-    const handleTypeChangeInForm = (newType: CashflowType) => {
-        const matchingCat = categories.find((c) => c.type === newType);
-        form.setData((prev) => ({
-            ...prev,
-            type: newType,
-            category_id: matchingCat ? matchingCat.id.toString() : '',
-        }));
-    };
-
-    const handleFormSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (editingCashflow) {
-            form.put(cashflowsUpdate.url(editingCashflow.id), {
-                onSuccess: () => setIsFormModalOpen(false),
-            });
-        } else {
-            form.post(cashflowsStore.url(), {
-                onSuccess: () => setIsFormModalOpen(false),
-            });
-        }
-    };
-
     const handleDeleteConfirm = () => {
         if (!deletingCashflow) {
-return;
-}
+            return;
+        }
 
         router.delete(cashflowsDestroy.url(deletingCashflow.id), {
             onSuccess: () => setDeletingCashflow(null),
@@ -286,9 +210,11 @@ return;
                             </p>
                         </div>
                         <Can permission="cashflow.create">
-                            <Button onClick={openCreateModal} className="gap-2">
-                                <Plus className="h-4 w-4" />
-                                Catat Transaksi
+                            <Button asChild className="gap-2">
+                                <Link href={cashflowsCreate.url()}>
+                                    <Plus className="h-4 w-4" />
+                                    Catat Transaksi
+                                </Link>
                             </Button>
                         </Can>
                     </CardHeader>
@@ -414,10 +340,12 @@ return;
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                onClick={() => openEditModal(cashflow)}
+                                                                asChild
                                                                 title="Ubah"
                                                             >
-                                                                <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                                <Link href={cashflowsEdit.url(cashflow.id)}>
+                                                                    <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                                </Link>
                                                             </Button>
                                                         </Can>
                                                         <Can permission="cashflow.delete">
@@ -468,126 +396,6 @@ return;
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Create & Edit Modal */}
-            <Dialog open={isFormModalOpen} onOpenChange={setIsFormModalOpen}>
-                <DialogContent className="sm:max-w-[480px]">
-                    <DialogHeader>
-                        <DialogTitle>
-                            {editingCashflow ? 'Edit Transaksi Cashflow' : 'Catat Transaksi Baru'}
-                        </DialogTitle>
-                        <DialogDescription>
-                            Isi rincian transaksi arus kas di bawah ini. Klik Simpan setelah selesai.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <form onSubmit={handleFormSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="type">Tipe Transaksi</Label>
-                            <Select
-                                value={form.data.type}
-                                onValueChange={(val: CashflowType) => handleTypeChangeInForm(val)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Pilih Tipe" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="inflow">Pemasukan (Inflow)</SelectItem>
-                                    <SelectItem value="outflow">Pengeluaran (Outflow)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <InputError message={form.errors.type} />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Nama / Judul Transaksi</Label>
-                            <Input
-                                id="name"
-                                value={form.data.name}
-                                onChange={(e) => form.setData('name', e.target.value)}
-                                placeholder="Contoh: Gaji Bulan Ini, Pembelian Alat Tulis"
-                                required
-                            />
-                            <InputError message={form.errors.name} />
-                        </div>
-
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="category_id">Kategori</Label>
-                                <Select
-                                    value={form.data.category_id.toString()}
-                                    onValueChange={(val) => form.setData('category_id', val)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Pilih Kategori" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {availableCategoriesForForm.length > 0 ? (
-                                            availableCategoriesForForm.map((cat) => (
-                                                <SelectItem key={cat.id} value={cat.id.toString()}>
-                                                    {cat.name}
-                                                </SelectItem>
-                                            ))
-                                        ) : (
-                                            <SelectItem value="disabled" disabled>
-                                                Tidak ada kategori {form.data.type === 'inflow' ? 'Pemasukan' : 'Pengeluaran'}
-                                            </SelectItem>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={form.errors.category_id} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="amount">Nominal (Rp)</Label>
-                                <Input
-                                    id="amount"
-                                    type="text"
-                                    value={form.data.amount}
-                                    onChange={(e) => form.setData('amount', e.target.value)}
-                                    placeholder="Contoh: 150000 atau 150.000"
-                                    required
-                                />
-                                <InputError message={form.errors.amount} />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="transaction_date">Tanggal Transaksi</Label>
-                            <Input
-                                id="transaction_date"
-                                type="date"
-                                value={form.data.transaction_date}
-                                onChange={(e) => form.setData('transaction_date', e.target.value)}
-                                required
-                            />
-                            <InputError message={form.errors.transaction_date} />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Deskripsi (Opsional)</Label>
-                            <Input
-                                id="description"
-                                value={form.data.description}
-                                onChange={(e) => form.setData('description', e.target.value)}
-                                placeholder="Keterangan tambahan transaksi..."
-                            />
-                            <InputError message={form.errors.description} />
-                        </div>
-
-                        <DialogFooter className="gap-2 sm:gap-0">
-                            <DialogClose asChild>
-                                <Button type="button" variant="outline">
-                                    Batal
-                                </Button>
-                            </DialogClose>
-                            <Button type="submit" disabled={form.processing}>
-                                {form.processing ? 'Menyimpan...' : 'Simpan'}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
 
             {/* Delete Confirmation Modal */}
             <Dialog open={!!deletingCashflow} onOpenChange={(open) => !open && setDeletingCashflow(null)}>

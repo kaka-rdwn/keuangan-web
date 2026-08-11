@@ -62,6 +62,22 @@ class UserController extends Controller
     }
 
     /**
+     * Menampilkan halaman formulir pembuatan pengguna baru.
+     *
+     * @return Response Komponen halaman Inertia untuk pembuatan pengguna.
+     */
+    public function create(): Response
+    {
+        Gate::authorize('user.manage');
+
+        $roles = Role::select('id', 'name', 'description')->get();
+
+        return Inertia::render('users/create', [
+            'roles' => $roles,
+        ]);
+    }
+
+    /**
      * Menyimpan data pengguna baru ke database dan mengirimkan email kredensial setelah transaksi commit.
      *
      * @param  StoreUserRequest  $request  Form request yang berisi data validasi pengguna baru.
@@ -105,6 +121,31 @@ class UserController extends Controller
         Mail::to($user->email)->send(new UserCreatedMail($user, $plainPassword));
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan dan email kredensial telah dikirim.');
+    }
+
+    /**
+     * Menampilkan halaman formulir penyuntingan pengguna.
+     *
+     * @param  User  $user  Instance pengguna yang akan disunting.
+     * @return Response Komponen halaman Inertia untuk penyuntingan pengguna.
+     */
+    public function edit(User $user): Response
+    {
+        Gate::authorize('user.manage');
+
+        $user->load('role');
+        $roles = Role::select('id', 'name', 'description')->get();
+
+        return Inertia::render('users/edit', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'role' => $user->role,
+            ],
+            'roles' => $roles,
+        ]);
     }
 
     /**
