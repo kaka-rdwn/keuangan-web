@@ -86,6 +86,22 @@ export default function CategoriesIndex({ categories, filters }: Props) {
         setSelectedType(val);
     };
 
+    const handleSort = (field: string) => {
+        const direction = filters.sort === field && filters.direction === 'asc' ? 'desc' : 'asc';
+        router.get(
+            categoriesIndex.url({
+                query: {
+                    search: search || undefined,
+                    type: selectedType !== 'all' ? selectedType : undefined,
+                    sort: field,
+                    direction,
+                },
+            }),
+            {},
+            { preserveState: true, replace: true }
+        );
+    };
+
     const openCreateModal = () => {
         setEditingCategory(null);
         form.setData({
@@ -144,7 +160,7 @@ return;
                                 Kelola kategori pemasukan dan pengeluaran transaksi keuangan Anda.
                             </p>
                         </div>
-                        <Can permission="category.manage">
+                        <Can permission="category.create">
                             <Button onClick={openCreateModal} className="gap-2">
                                 <Plus className="h-4 w-4" />
                                 Tambah Kategori
@@ -158,7 +174,7 @@ return;
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     type="text"
-                                    placeholder="Cari nama atau deskripsi..."
+                                    placeholder="Cari nama atau deskripsi kategori..."
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     className="pl-9"
@@ -171,20 +187,44 @@ return;
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Semua Tipe</SelectItem>
-                                        <SelectItem value="inflow">Pemasukan (Inflow)</SelectItem>
-                                        <SelectItem value="outflow">Pengeluaran (Outflow)</SelectItem>
+                                        <SelectItem value="inflow">Pemasukan</SelectItem>
+                                        <SelectItem value="outflow">Pengeluaran</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
 
-                        {/* Table */}
+                        {/* Data Table */}
                         <div className="overflow-hidden rounded-md border border-sidebar-border/70 dark:border-sidebar-border">
                             <table className="w-full text-left text-sm">
                                 <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                                     <tr>
-                                        <th className="px-4 py-3 font-semibold">Nama</th>
-                                        <th className="px-4 py-3 font-semibold">Tipe</th>
+                                        <th
+                                            className="px-4 py-3 font-semibold cursor-pointer hover:bg-muted/80 select-none"
+                                            onClick={() => handleSort('name')}
+                                        >
+                                            <div className="flex items-center gap-1">
+                                                <span>Nama Kategori</span>
+                                                {filters.sort === 'name' && (
+                                                    <span className="text-primary">
+                                                        {filters.direction === 'asc' ? '↑' : '↓'}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </th>
+                                        <th
+                                            className="px-4 py-3 font-semibold cursor-pointer hover:bg-muted/80 select-none"
+                                            onClick={() => handleSort('type')}
+                                        >
+                                            <div className="flex items-center gap-1">
+                                                <span>Tipe</span>
+                                                {filters.sort === 'type' && (
+                                                    <span className="text-primary">
+                                                        {filters.direction === 'asc' ? '↑' : '↓'}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </th>
                                         <th className="px-4 py-3 font-semibold">Deskripsi</th>
                                         <th className="px-4 py-3 text-right font-semibold">Aksi</th>
                                     </tr>
@@ -211,11 +251,8 @@ return;
                                                     {category.description || '-'}
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
-                                                    <Can
-                                                        permission="category.manage"
-                                                        fallback={<span className="text-xs font-mono text-muted-foreground">No access</span>}
-                                                    >
-                                                        <div className="flex items-center justify-end gap-2">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <Can permission="category.edit">
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
@@ -224,6 +261,8 @@ return;
                                                             >
                                                                 <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                                             </Button>
+                                                        </Can>
+                                                        <Can permission="category.delete">
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
@@ -232,8 +271,8 @@ return;
                                                             >
                                                                 <Trash2 className="h-4 w-4 text-destructive" />
                                                             </Button>
-                                                        </div>
-                                                    </Can>
+                                                        </Can>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))

@@ -20,8 +20,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'cashflow.delete', 'display_name' => 'Hapus Cashflow', 'description' => 'Dapat menghapus data transaksi'],
 
             // Category
-            ['name' => 'category.view', 'display_name' => 'Lihat Kategori', 'description' => 'Dapat melihat daftar kategori'],
-            ['name' => 'category.manage', 'display_name' => 'Kelola Kategori', 'description' => 'Dapat membuat, mengubah, dan menghapus kategori'],
+            ['name' => 'category.view', 'display_name' => 'Lihat Kategori', 'description' => 'Dapat melihat daftar dan detail kategori'],
+            ['name' => 'category.create', 'display_name' => 'Tambah Kategori', 'description' => 'Dapat membuat kategori baru'],
+            ['name' => 'category.edit', 'display_name' => 'Ubah Kategori', 'description' => 'Dapat memperbarui data kategori'],
+            ['name' => 'category.delete', 'display_name' => 'Hapus Kategori', 'description' => 'Dapat menghapus kategori'],
 
             // User
             ['name' => 'user.manage', 'display_name' => 'Kelola Pengguna', 'description' => 'Dapat mengelola akun pengguna dan peran'],

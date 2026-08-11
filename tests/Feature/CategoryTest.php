@@ -18,9 +18,9 @@ test('category index page can be rendered for user with view permission', functi
         ->assertOk();
 });
 
-test('user with manage permission can create a category with type', function () {
+test('user with create permission can create a category with type', function () {
     $role = Role::firstOrCreate(['name' => 'User']);
-    $permission = Permission::firstOrCreate(['name' => 'category.manage'], ['display_name' => 'Kelola Kategori']);
+    $permission = Permission::firstOrCreate(['name' => 'category.create'], ['display_name' => 'Tambah Kategori']);
     $user = User::factory()->create(['role_id' => $role->id]);
     $user->permissions()->attach($permission->id);
 
@@ -38,9 +38,9 @@ test('user with manage permission can create a category with type', function () 
     ]);
 });
 
-test('user with manage permission can update a category type', function () {
+test('user with edit permission can update a category type', function () {
     $role = Role::firstOrCreate(['name' => 'User']);
-    $permission = Permission::firstOrCreate(['name' => 'category.manage'], ['display_name' => 'Kelola Kategori']);
+    $permission = Permission::firstOrCreate(['name' => 'category.edit'], ['display_name' => 'Ubah Kategori']);
     $user = User::factory()->create(['role_id' => $role->id]);
     $user->permissions()->attach($permission->id);
 
@@ -66,7 +66,7 @@ test('user with manage permission can update a category type', function () {
 
 test('category deletion is prevented if associated cashflows exist', function () {
     $role = Role::firstOrCreate(['name' => 'User']);
-    $permission = Permission::firstOrCreate(['name' => 'category.manage'], ['display_name' => 'Kelola Kategori']);
+    $permission = Permission::firstOrCreate(['name' => 'category.delete'], ['display_name' => 'Hapus Kategori']);
     $user = User::factory()->create(['role_id' => $role->id]);
     $user->permissions()->attach($permission->id);
 
@@ -90,9 +90,9 @@ test('category deletion is prevented if associated cashflows exist', function ()
     ]);
 });
 
-test('user with manage permission can delete category without cashflows', function () {
+test('user with delete permission can delete category without cashflows', function () {
     $role = Role::firstOrCreate(['name' => 'User']);
-    $permission = Permission::firstOrCreate(['name' => 'category.manage'], ['display_name' => 'Kelola Kategori']);
+    $permission = Permission::firstOrCreate(['name' => 'category.delete'], ['display_name' => 'Hapus Kategori']);
     $user = User::factory()->create(['role_id' => $role->id]);
     $user->permissions()->attach($permission->id);
 

@@ -61,7 +61,9 @@ class CategoryController extends Controller
                 'sort' => $sort,
                 'direction' => $direction,
             ],
-            'canManage' => Gate::allows('category.manage'),
+            'canCreate' => Gate::allows('category.create'),
+            'canEdit' => Gate::allows('category.edit'),
+            'canDelete' => Gate::allows('category.delete'),
         ]);
     }
 
@@ -73,7 +75,7 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
-        Gate::authorize('category.manage');
+        Gate::authorize('category.create');
 
         DB::transaction(function () use ($request) {
             Category::create([
@@ -99,7 +101,7 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        Gate::authorize('category.manage');
+        Gate::authorize('category.edit');
 
         DB::transaction(function () use ($request, $category) {
             $category->update([
@@ -124,7 +126,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): RedirectResponse
     {
-        Gate::authorize('category.manage');
+        Gate::authorize('category.delete');
 
         if ($category->cashflows()->exists()) {
             Inertia::flash('toast', [
