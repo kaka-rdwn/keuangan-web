@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Save, UserPlus } from 'lucide-react';
+import { ArrowLeft, Check, Copy, RefreshCw, Save, UserPlus } from 'lucide-react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -13,14 +14,51 @@ interface Props {
     roles: Role[];
 }
 
+const generatePassword = (length = 12): string => {
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+    const all = uppercase + lowercase + numbers + symbols;
+
+    let password = '';
+    password += uppercase[Math.floor(Math.random() * uppercase.length)];
+    password += lowercase[Math.floor(Math.random() * lowercase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += symbols[Math.floor(Math.random() * symbols.length)];
+
+    for (let i = 4; i < length; i++) {
+        password += all[Math.floor(Math.random() * all.length)];
+    }
+
+    return password.split('').sort(() => 0.5 - Math.random()).join('');
+};
+
 export default function UserCreate({ roles }: Props) {
+    const [copied, setCopied] = useState(false);
+
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
         role: roles.length > 0 ? roles[0].name : 'User',
-        password: '',
-        password_confirmation: '',
+        password: generatePassword(12),
     });
+
+    const handleRegeneratePassword = () => {
+        const newPassword = generatePassword(12);
+        setData('password', newPassword);
+        setCopied(false);
+    };
+
+    const handleCopyPassword = () => {
+        if (!data.password) {
+return;
+}
+
+        navigator.clipboard.writeText(data.password);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -113,30 +151,54 @@ export default function UserCreate({ roles }: Props) {
 
                             {/* Password */}
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="required">
-                                    Kata Sandi (Password)
-                                </Label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password" className="required">
+                                        Kata Sandi (Password)
+                                    </Label>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleCopyPassword}
+                                            className="h-7 px-2 text-xs gap-1 text-muted-foreground hover:text-foreground"
+                                            title="Salin Kata Sandi"
+                                        >
+                                            {copied ? (
+                                                <>
+                                                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                    <span className="text-emerald-600 dark:text-emerald-400">Tersalin!</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Copy className="h-3.5 w-3.5" />
+                                                    Salin
+                                                </>
+                                            )}
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleRegeneratePassword}
+                                            className="h-7 px-2 text-xs gap-1 text-primary hover:text-primary/80"
+                                        >
+                                            <RefreshCw className="h-3.5 w-3.5" />
+                                            Generate Ulang
+                                        </Button>
+                                    </div>
+                                </div>
                                 <PasswordInput
                                     id="password"
-                                    placeholder="Minimal 8 karakter (huruf besar, kecil, angka, simbol)"
+                                    placeholder="Password acak ter-generate..."
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
+                                    className="font-mono text-sm"
                                 />
                                 <InputError message={errors.password} />
-                            </div>
-
-                            {/* Konfirmasi Password */}
-                            <div className="space-y-2">
-                                <Label htmlFor="password_confirmation" className="required">
-                                    Konfirmasi Kata Sandi
-                                </Label>
-                                <PasswordInput
-                                    id="password_confirmation"
-                                    placeholder="Ulangi kata sandi di atas"
-                                    value={data.password_confirmation}
-                                    onChange={(e) => setData('password_confirmation', e.target.value)}
-                                />
-                                <InputError message={errors.password_confirmation} />
+                                <p className="text-[11px] text-muted-foreground">
+                                    Password otomatis dibuat secara acak. Anda dapat menyalin atau melakukan generate ulang sebelum menyimpan.
+                                </p>
                             </div>
 
                             {/* Form Actions */}
