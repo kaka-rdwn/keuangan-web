@@ -35,60 +35,31 @@ class CashflowController extends Controller
     {
         Gate::authorize('cashflow.view');
 
-        $search = $request->input('search');
-        $type = $request->input('type');
-        $categoryId = $request->input('category_id');
-        $dateFrom = $request->input('date_from');
-        $dateTo = $request->input('date_to');
-        $sort = $request->input('sort', 'transaction_date');
-        $direction = $request->input('direction', 'desc');
+        $filters = $request->only(['search', 'type', 'category_id', 'date_from', 'date_to', 'sort', 'direction']);
 
-        $allowedSorts = ['name', 'amount', 'type', 'transaction_date', 'created_at'];
-        if (! in_array($sort, $allowedSorts, true)) {
-            $sort = 'transaction_date';
-        }
-
-        $allowedDirections = ['asc', 'desc'];
-        if (! in_array($direction, $allowedDirections, true)) {
-            $direction = 'desc';
-        }
-
-        $query = Cashflow::query()
-            ->when($search, function ($q, $search) {
-                $q->where(function ($sub) use ($search) {
-                    $sub->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-                });
-            })
-            ->when($type, fn ($q, $type) => $q->where('type', $type))
-            ->when($categoryId, fn ($q, $catId) => $q->where('category_id', $catId))
-            ->when($dateFrom, fn ($q, $from) => $q->whereDate('transaction_date', '>=', $from))
-            ->when($dateTo, fn ($q, $to) => $q->whereDate('transaction_date', '<=', $to));
+        $query = Cashflow::query()->filter($filters);
 
         $summary = $this->cashflowService->calculateSummary($query);
 
         $cashflows = $query->with('category')
-            ->orderBy($sort, $direction)
+            ->sortBy($filters['sort'] ?? null, $filters['direction'] ?? null)
             ->paginate(10)
             ->withQueryString();
 
-        $categories = Category::query()
-            ->select(['id', 'name', 'type'])
-            ->orderBy('name')
-            ->get();
+        $categories = Category::forDropdown()->get();
 
         return Inertia::render('cashflows/index', [
             'cashflows' => $cashflows,
             'categories' => $categories,
             'summary' => $summary,
             'filters' => [
-                'search' => $search,
-                'type' => $type,
-                'category_id' => $categoryId,
-                'date_from' => $dateFrom,
-                'date_to' => $dateTo,
-                'sort' => $sort,
-                'direction' => $direction,
+                'search' => $filters['search'] ?? null,
+                'type' => $filters['type'] ?? null,
+                'category_id' => $filters['category_id'] ?? null,
+                'date_from' => $filters['date_from'] ?? null,
+                'date_to' => $filters['date_to'] ?? null,
+                'sort' => $filters['sort'] ?? 'transaction_date',
+                'direction' => $filters['direction'] ?? 'desc',
             ],
             'can' => [
                 'create' => Gate::allows('cashflow.create'),
@@ -107,13 +78,8 @@ class CashflowController extends Controller
     {
         Gate::authorize('cashflow.create');
 
-        $categories = Category::query()
-            ->select(['id', 'name', 'type'])
-            ->orderBy('name')
-            ->get();
-
         return Inertia::render('cashflows/create', [
-            'categories' => $categories,
+            'categories' => Category::forDropdown()->get(),
         ]);
     }
 
@@ -152,14 +118,9 @@ class CashflowController extends Controller
     {
         Gate::authorize('cashflow.edit');
 
-        $categories = Category::query()
-            ->select(['id', 'name', 'type'])
-            ->orderBy('name')
-            ->get();
-
         return Inertia::render('cashflows/edit', [
             'cashflow' => $cashflow->load('category'),
-            'categories' => $categories,
+            'categories' => Category::forDropdown()->get(),
         ]);
     }
 

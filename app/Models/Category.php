@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\CashflowType;
 use Database\Factories\CategoryFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,6 +46,17 @@ class Category extends Model
         return [
             'type' => CashflowType::class,
         ];
+    }
+
+    /**
+     * Scope untuk mengambil kolom ringkas kategori untuk kebutuhan dropdown pilihan.
+     *
+     * @param  Builder<Category>  $query
+     * @return Builder<Category>
+     */
+    public function scopeForDropdown(Builder $query): Builder
+    {
+        return $query->select(['id', 'name', 'type'])->orderBy('name');
     }
 
     /**
