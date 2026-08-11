@@ -29,34 +29,21 @@ class UserController extends Controller
     {
         Gate::authorize('user.manage');
 
-        $search = $request->input('search');
-        $roleName = $request->input('role');
+        $filters = $request->only(['search', 'role']);
 
         $users = User::query()
             ->with('role')
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
-            })
-            ->when($roleName, function ($query, $roleName) {
-                $query->whereHas('role', function ($q) use ($roleName) {
-                    $q->where('name', $roleName);
-                });
-            })
+            ->filter($filters)
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        $roles = Role::select('id', 'name', 'description')->get();
-
         return Inertia::render('users/index', [
             'users' => $users,
-            'roles' => $roles,
+            'roles' => Role::forDropdown()->get(),
             'filters' => [
-                'search' => $search,
-                'role' => $roleName,
+                'search' => $filters['search'] ?? null,
+                'role' => $filters['role'] ?? null,
             ],
         ]);
     }
@@ -70,10 +57,8 @@ class UserController extends Controller
     {
         Gate::authorize('user.manage');
 
-        $roles = Role::select('id', 'name', 'description')->get();
-
         return Inertia::render('users/create', [
-            'roles' => $roles,
+            'roles' => Role::forDropdown()->get(),
         ]);
     }
 
@@ -101,24 +86,17 @@ class UserController extends Controller
                 'email_verified_at' => null,
             ]);
 
-            if ($role->name === 'Admin') {
-                $newUser->permissions()->sync(Permission::pluck('id'));
-            } else {
-                $defaultPermissions = Permission::whereIn('name', [
-                    'cashflow.view',
-                    'cashflow.create',
-                    'cashflow.edit',
-                    'cashflow.delete',
-                    'category.view',
-                ])->pluck('id');
-
-                $newUser->permissions()->sync($defaultPermissions);
-            }
+            $newUser->syncRolePermissions($role);
 
             return $newUser;
         });
 
         Mail::to($user->email)->send(new UserCreatedMail($user, $plainPassword));
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Pengguna berhasil ditambahkan dan email kredensial telah dikirim.'),
+        ]);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan dan email kredensial telah dikirim.');
     }
@@ -134,7 +112,6 @@ class UserController extends Controller
         Gate::authorize('user.manage');
 
         $user->load('role');
-        $roles = Role::select('id', 'name', 'description')->get();
 
         return Inertia::render('users/edit', [
             'user' => [
@@ -144,7 +121,7 @@ class UserController extends Controller
                 'role_id' => $user->role_id,
                 'role' => $user->role,
             ],
-            'roles' => $roles,
+            'roles' => Role::forDropdown()->get(),
         ]);
     }
 
@@ -175,21 +152,13 @@ class UserController extends Controller
             }
 
             $user->update($userData);
-
-            if ($role->name === 'Admin') {
-                $user->permissions()->sync(Permission::pluck('id'));
-            } else {
-                $defaultPermissions = Permission::whereIn('name', [
-                    'cashflow.view',
-                    'cashflow.create',
-                    'cashflow.edit',
-                    'cashflow.delete',
-                    'category.view',
-                ])->pluck('id');
-
-                $user->permissions()->sync($defaultPermissions);
-            }
+            $user->syncRolePermissions($role);
         });
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Data pengguna berhasil diperbarui.'),
+        ]);
 
         return redirect()->route('users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
@@ -206,10 +175,20 @@ class UserController extends Controller
         Gate::authorize('user.manage');
 
         if ($user->id === $request->user()?->id) {
+            Inertia::flash('toast', [
+                'type' => 'error',
+                'message' => __('Anda tidak dapat menghapus akun Anda sendiri.'),
+            ]);
+
             return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
         $user->delete();
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Pengguna berhasil dihapus.'),
+        ]);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
@@ -226,25 +205,7 @@ class UserController extends Controller
 
         $user->load('role');
 
-        $permissions = Permission::select('id', 'name', 'display_name', 'description')->get();
-
-        $groupedPermissions = $permissions->groupBy(function ($permission) {
-            return explode('.', $permission->name)[0];
-        })->map(function ($items, $groupKey) {
-            $groupName = match ($groupKey) {
-                'cashflow' => 'Manajemen Cashflow',
-                'category' => 'Kategori Keuangan',
-                'user' => 'Manajemen Pengguna',
-                default => ucfirst($groupKey),
-            };
-
-            return [
-                'key' => $groupKey,
-                'name' => $groupName,
-                'items' => $items->values(),
-            ];
-        })->values();
-
+        $groupedPermissions = Permission::getGroupedPermissions();
         $userPermissionIds = $user->permissions()->pluck('permissions.id')->toArray();
 
         return Inertia::render('users/permissions', [
@@ -279,6 +240,11 @@ class UserController extends Controller
         DB::transaction(function () use ($user, $validated) {
             $user->permissions()->sync($validated['permissions']);
         });
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Permission pengguna berhasil diperbarui.'),
+        ]);
 
         return redirect()->route('users.index')->with('success', 'Permission pengguna berhasil diperbarui.');
     }

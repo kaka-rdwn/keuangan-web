@@ -6,6 +6,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -30,6 +31,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Role|null $role
  */
 #[Fillable(['name', 'email', 'password', 'role_id', 'email_verified_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
@@ -50,6 +52,49 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Scope untuk menyaring data pengguna berdasarkan kriteria pencarian (nama/email) dan nama role.
+     *
+     * @param  Builder<User>  $query
+     * @param  array<string, mixed>  $filters
+     * @return Builder<User>
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['search'] ?? null, function (Builder $q, string $search) {
+                $q->where(function (Builder $sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when($filters['role'] ?? null, function (Builder $q, string $roleName) {
+                $q->whereHas('role', function (Builder $sub) use ($roleName) {
+                    $sub->where('name', $roleName);
+                });
+            });
+    }
+
+    /**
+     * Menyinkronkan permission default pengguna berdasarkan peran (role) yang diberikan.
+     */
+    public function syncRolePermissions(Role $role): void
+    {
+        if ($role->name === 'Admin') {
+            $this->permissions()->sync(Permission::pluck('id'));
+        } else {
+            $defaultPermissions = Permission::whereIn('name', [
+                'cashflow.view',
+                'cashflow.create',
+                'cashflow.edit',
+                'cashflow.delete',
+                'category.view',
+            ])->pluck('id');
+
+            $this->permissions()->sync($defaultPermissions);
+        }
     }
 
     /**
