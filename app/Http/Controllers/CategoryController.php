@@ -24,46 +24,27 @@ class CategoryController extends Controller
     {
         Gate::authorize('category.view');
 
-        $search = $request->input('search');
-        $type = $request->input('type');
-        $sort = $request->input('sort', 'created_at');
-        $direction = $request->input('direction', 'desc');
-
-        $allowedSorts = ['name', 'type', 'created_at'];
-        if (! in_array($sort, $allowedSorts, true)) {
-            $sort = 'created_at';
-        }
-
-        $allowedDirections = ['asc', 'desc'];
-        if (! in_array($direction, $allowedDirections, true)) {
-            $direction = 'desc';
-        }
+        $filters = $request->only(['search', 'type', 'sort', 'direction']);
 
         $categories = Category::query()
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
-                });
-            })
-            ->when($type, function ($query, $type) {
-                $query->where('type', $type);
-            })
-            ->orderBy($sort, $direction)
+            ->filter($filters)
+            ->sortBy($filters['sort'] ?? null, $filters['direction'] ?? null)
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('categories/index', [
             'categories' => $categories,
             'filters' => [
-                'search' => $search,
-                'type' => $type,
-                'sort' => $sort,
-                'direction' => $direction,
+                'search' => $filters['search'] ?? null,
+                'type' => $filters['type'] ?? null,
+                'sort' => $filters['sort'] ?? 'created_at',
+                'direction' => $filters['direction'] ?? 'desc',
             ],
-            'canCreate' => Gate::allows('category.create'),
-            'canEdit' => Gate::allows('category.edit'),
-            'canDelete' => Gate::allows('category.delete'),
+            'can' => [
+                'create' => Gate::allows('category.create'),
+                'edit' => Gate::allows('category.edit'),
+                'delete' => Gate::allows('category.delete'),
+            ],
         ]);
     }
 

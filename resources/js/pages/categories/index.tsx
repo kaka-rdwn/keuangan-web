@@ -37,9 +37,14 @@ interface Props {
         sort?: string;
         direction?: string;
     };
+    can?: {
+        create: boolean;
+        edit: boolean;
+        delete: boolean;
+    };
 }
 
-export default function CategoriesIndex({ categories, filters }: Props) {
+export default function CategoriesIndex({ categories, filters, can }: Props) {
     const [search, setSearch] = useState(filters.search ?? '');
     const [selectedType, setSelectedType] = useState(filters.type ?? 'all');
     const isFirstRender = useRef(true);
@@ -100,6 +105,10 @@ export default function CategoriesIndex({ categories, filters }: Props) {
         });
     };
 
+    const canCreate = can?.create ?? true;
+    const canEdit = can?.edit ?? true;
+    const canDelete = can?.delete ?? true;
+
     return (
         <>
             <Head title="Kategori Keuangan" />
@@ -112,14 +121,16 @@ export default function CategoriesIndex({ categories, filters }: Props) {
                                 Kelola kategori pemasukan dan pengeluaran transaksi keuangan Anda.
                             </p>
                         </div>
-                        <Can permission="category.create">
-                            <Button asChild className="gap-2">
-                                <Link href={categoriesCreate.url()}>
-                                    <Plus className="h-4 w-4" />
-                                    Tambah Kategori
-                                </Link>
-                            </Button>
-                        </Can>
+                        {canCreate && (
+                            <Can permission="category.create">
+                                <Button asChild className="gap-2">
+                                    <Link href={categoriesCreate.url()}>
+                                        <Plus className="h-4 w-4" />
+                                        Tambah Kategori
+                                    </Link>
+                                </Button>
+                            </Can>
+                        )}
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Filters & Search */}
@@ -206,28 +217,32 @@ export default function CategoriesIndex({ categories, filters }: Props) {
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <Can permission="category.edit">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                asChild
-                                                                title="Ubah"
-                                                            >
-                                                                <Link href={categoriesEdit.url(category.id)}>
-                                                                    <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                                </Link>
-                                                            </Button>
-                                                        </Can>
-                                                        <Can permission="category.delete">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => setDeletingCategory(category)}
-                                                                title="Hapus"
-                                                            >
-                                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                                            </Button>
-                                                        </Can>
+                                                        {canEdit && (
+                                                            <Can permission="category.edit">
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    asChild
+                                                                    title="Ubah"
+                                                                >
+                                                                    <Link href={categoriesEdit.url(category.id)}>
+                                                                        <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                                    </Link>
+                                                                </Button>
+                                                            </Can>
+                                                        )}
+                                                        {canDelete && (
+                                                            <Can permission="category.delete">
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    onClick={() => setDeletingCategory(category)}
+                                                                    title="Hapus"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                                </Button>
+                                                            </Can>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>

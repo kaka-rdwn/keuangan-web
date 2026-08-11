@@ -49,6 +49,42 @@ class Category extends Model
     }
 
     /**
+     * Scope untuk menyaring data kategori berdasarkan kriteria filter (search, type).
+     *
+     * @param  Builder<Category>  $query
+     * @param  array<string, mixed>  $filters
+     * @return Builder<Category>
+     */
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['search'] ?? null, function (Builder $q, string $search) {
+                $q->where(function (Builder $sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->when($filters['type'] ?? null, fn (Builder $q, string $type) => $q->where('type', $type));
+    }
+
+    /**
+     * Scope untuk mengurutkan data kategori dengan validasi kolom dan arah pengurutan.
+     *
+     * @param  Builder<Category>  $query
+     * @return Builder<Category>
+     */
+    public function scopeSortBy(Builder $query, ?string $sort = null, ?string $direction = null): Builder
+    {
+        $allowedSorts = ['name', 'type', 'created_at'];
+        $sortColumn = (is_string($sort) && in_array($sort, $allowedSorts, true)) ? $sort : 'created_at';
+
+        $allowedDirections = ['asc', 'desc'];
+        $sortDirection = (is_string($direction) && in_array($direction, $allowedDirections, true)) ? $direction : 'desc';
+
+        return $query->orderBy($sortColumn, $sortDirection);
+    }
+
+    /**
      * Scope untuk mengambil kolom ringkas kategori untuk kebutuhan dropdown pilihan.
      *
      * @param  Builder<Category>  $query
