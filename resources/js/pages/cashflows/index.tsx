@@ -29,6 +29,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { formatPaginationLabel } from '@/lib/utils';
 import {
     create as cashflowsCreate,
     destroy as cashflowsDestroy,
@@ -387,7 +388,7 @@ export default function CashflowsIndex({
                                             size="sm"
                                             disabled={!link.url}
                                             onClick={() => link.url && router.get(link.url, {}, { preserveState: true })}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                            dangerouslySetInnerHTML={{ __html: formatPaginationLabel(link.label) }}
                                         />
                                     ))}
                                 </div>

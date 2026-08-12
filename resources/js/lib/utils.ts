@@ -10,3 +10,11 @@ export function cn(...inputs: ClassValue[]) {
 export function toUrl(url: NonNullable<InertiaLinkProps['href']>): string {
     return typeof url === 'string' ? url : url.url;
 }
+
+export function formatPaginationLabel(label: string): string {
+    return label
+        .replace(/pagination\.previous/gi, '&laquo; Sebelumnya')
+        .replace(/pagination\.next/gi, 'Selanjutnya &raquo;')
+        .replace(/&laquo;\s*Previous/gi, '&laquo; Sebelumnya')
+        .replace(/Next\s*&raquo;/gi, 'Selanjutnya &raquo;');
+}
