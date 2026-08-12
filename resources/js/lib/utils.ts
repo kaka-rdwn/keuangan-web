@@ -19,7 +19,7 @@ export function formatPaginationLabel(label: string): string {
         .replace(/Next\s*&raquo;/gi, 'Selanjutnya &raquo;');
 }
 
-export function formatDate(dateString?: string | null): string {
+export function formatDate(dateString?: string | null, includeTime: boolean = false): string {
     if (!dateString) {
         return '-';
     }
@@ -28,6 +28,16 @@ export function formatDate(dateString?: string | null): string {
 
     if (isNaN(date.getTime())) {
         return dateString;
+    }
+
+    if (includeTime) {
+        return new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(date);
     }
 
     return new Intl.DateTimeFormat('id-ID', {

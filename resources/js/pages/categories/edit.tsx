@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Edit3, Save } from 'lucide-react';
+import { AuditMetaCard } from '@/components/audit-meta-card';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -119,6 +120,14 @@ export default function CategoryEdit({ category }: Props) {
                         </form>
                     </CardContent>
                 </Card>
+
+                {/* Audit Metadata Info */}
+                <AuditMetaCard
+                    createdBy={category.creator ?? category.createdBy}
+                    createdAt={category.created_at}
+                    updatedBy={category.updater ?? category.updatedBy}
+                    updatedAt={category.updated_at}
+                />
             </div>
         </>
     );

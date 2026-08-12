@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Edit3, Save } from 'lucide-react';
+import { AuditMetaCard } from '@/components/audit-meta-card';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -152,6 +153,13 @@ export default function UserEdit({ user, roles }: Props) {
                         </form>
                     </CardContent>
                 </Card>
+
+                {/* Audit Metadata Info */}
+                <AuditMetaCard
+                    createdAt={user.created_at}
+                    updatedAt={user.updated_at}
+                    showUsers={false}
+                />
             </div>
         </>
     );

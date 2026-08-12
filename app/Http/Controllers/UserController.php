@@ -125,6 +125,8 @@ class UserController extends Controller
                 'email' => $user->email,
                 'role_id' => $user->role_id,
                 'role' => $user->role,
+                'created_at' => $user->created_at?->toISOString() ?? $user->created_at,
+                'updated_at' => $user->updated_at?->toISOString() ?? $user->updated_at,
             ],
             'roles' => Role::forDropdown()->get(),
         ]);

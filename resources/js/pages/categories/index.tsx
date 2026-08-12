@@ -204,7 +204,7 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                                     {category.description || '-'}
                                                 </td>
                                                 <td className="px-4 py-3 text-xs font-mono text-muted-foreground whitespace-nowrap">
-                                                    {formatDate(category.created_at)}
+                                                    {formatDate(category.created_at, true)}
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">

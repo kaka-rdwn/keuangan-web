@@ -11,6 +11,10 @@ export interface Cashflow {
     description: string | null;
     created_by?: number | null;
     updated_by?: number | null;
+    creator?: { id: number; name: string } | null;
+    updater?: { id: number; name: string } | null;
+    createdBy?: { id: number; name: string } | null;
+    updatedBy?: { id: number; name: string } | null;
     created_at?: string;
     updated_at?: string;
 }

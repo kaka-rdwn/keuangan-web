@@ -106,11 +106,31 @@ class Category extends Model
     }
 
     /**
+     * Alias relasi ke User pembuat kategori
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
      * Relasi ke User pengubah kategori
      *
      * @return BelongsTo<User, $this>
      */
     public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Alias relasi ke User pengubah kategori
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }

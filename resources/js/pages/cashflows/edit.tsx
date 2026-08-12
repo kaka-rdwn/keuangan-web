@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Edit3, Save } from 'lucide-react';
 import { useMemo } from 'react';
+import { AuditMetaCard } from '@/components/audit-meta-card';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -197,6 +198,14 @@ export default function CashflowEdit({ cashflow, categories }: Props) {
                         </form>
                     </CardContent>
                 </Card>
+
+                {/* Audit Metadata Info */}
+                <AuditMetaCard
+                    createdBy={cashflow.creator ?? cashflow.createdBy}
+                    createdAt={cashflow.created_at}
+                    updatedBy={cashflow.updater ?? cashflow.updatedBy}
+                    updatedAt={cashflow.updated_at}
+                />
             </div>
         </>
     );

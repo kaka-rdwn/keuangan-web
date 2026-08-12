@@ -99,7 +99,7 @@ class CategoryController extends Controller
         Gate::authorize('category.edit');
 
         return Inertia::render('categories/edit', [
-            'category' => $category,
+            'category' => $category->load(['creator:id,name', 'updater:id,name', 'createdBy:id,name', 'updatedBy:id,name']),
         ]);
     }
 

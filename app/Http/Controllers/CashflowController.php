@@ -122,7 +122,7 @@ class CashflowController extends Controller
         Gate::authorize('cashflow.edit');
 
         return Inertia::render('cashflows/edit', [
-            'cashflow' => $cashflow->load('category'),
+            'cashflow' => $cashflow->load(['category', 'creator:id,name', 'updater:id,name', 'createdBy:id,name', 'updatedBy:id,name']),
             'categories' => Category::forDropdown()->get(),
         ]);
     }
