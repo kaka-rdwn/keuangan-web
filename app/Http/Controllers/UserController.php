@@ -29,12 +29,15 @@ class UserController extends Controller
     {
         Gate::authorize('user.manage');
 
+        $sortBy = $request->input('sort_by') ?? $request->input('sort');
+        $sortDir = $request->input('sort_dir') ?? $request->input('direction');
+
         $filters = $request->only(['search', 'role']);
 
         $users = User::query()
             ->with('role')
             ->filter($filters)
-            ->latest()
+            ->sortBy($sortBy, $sortDir)
             ->paginate(10)
             ->withQueryString();
 
@@ -44,6 +47,8 @@ class UserController extends Controller
             'filters' => [
                 'search' => $filters['search'] ?? null,
                 'role' => $filters['role'] ?? null,
+                'sort_by' => $sortBy ?? 'created_at',
+                'sort_dir' => $sortDir ?? 'desc',
             ],
         ]);
     }

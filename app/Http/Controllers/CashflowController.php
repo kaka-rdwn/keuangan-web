@@ -35,14 +35,17 @@ class CashflowController extends Controller
     {
         Gate::authorize('cashflow.view');
 
-        $filters = $request->only(['search', 'type', 'category_id', 'date_from', 'date_to', 'sort', 'direction']);
+        $sortBy = $request->input('sort_by') ?? $request->input('sort');
+        $sortDir = $request->input('sort_dir') ?? $request->input('direction');
+
+        $filters = $request->only(['search', 'type', 'category_id', 'date_from', 'date_to']);
 
         $query = Cashflow::query()->filter($filters);
 
         $summary = $this->cashflowService->calculateSummary($query);
 
         $cashflows = $query->with('category')
-            ->sortBy($filters['sort'] ?? null, $filters['direction'] ?? null)
+            ->sortBy($sortBy, $sortDir)
             ->paginate(10)
             ->withQueryString();
 
@@ -58,8 +61,8 @@ class CashflowController extends Controller
                 'category_id' => $filters['category_id'] ?? null,
                 'date_from' => $filters['date_from'] ?? null,
                 'date_to' => $filters['date_to'] ?? null,
-                'sort' => $filters['sort'] ?? 'transaction_date',
-                'direction' => $filters['direction'] ?? 'desc',
+                'sort_by' => $sortBy ?? 'transaction_date',
+                'sort_dir' => $sortDir ?? 'desc',
             ],
             'can' => [
                 'create' => Gate::allows('cashflow.create'),

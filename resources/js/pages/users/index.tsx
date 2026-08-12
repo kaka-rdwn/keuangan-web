@@ -1,6 +1,7 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Edit2, Key, Search, ShieldAlert, Trash2, UserCheck, UserPlus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { SortableHeader } from '@/components/sortable-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,6 +43,27 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
     const [deletingUser, setDeletingUser] = useState<UserItem | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+    const sortBy = filters.sort_by || filters.sort || 'created_at';
+    const sortDir = filters.sort_dir || filters.direction || 'desc';
+
+    const handleSort = (column: string) => {
+        const isSameColumn = sortBy === column;
+        const nextDir = isSameColumn ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+
+        router.get(
+            usersIndex.url({
+                query: {
+                    search: search || undefined,
+                    role: selectedRole !== 'all' ? selectedRole : undefined,
+                    sort_by: column,
+                    sort_dir: nextDir,
+                },
+            }),
+            {},
+            { preserveState: true, replace: true }
+        );
+    };
+
     // Debounced automatic search & filter effect
     useEffect(() => {
         if (isFirstRender.current) {
@@ -56,6 +78,8 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                     query: {
                         search: search || undefined,
                         role: selectedRole !== 'all' ? selectedRole : undefined,
+                        sort_by: sortBy,
+                        sort_dir: sortDir,
                     },
                 }),
                 {},
@@ -64,7 +88,7 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
         }, 350);
 
         return () => clearTimeout(timer);
-    }, [search, selectedRole]);
+    }, [search, selectedRole, sortBy, sortDir]);
 
     const handleRoleFilterChange = (val: string) => {
         setSelectedRole(val);
@@ -162,10 +186,10 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                             <table className="w-full text-left text-sm">
                                 <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                                     <tr>
-                                        <th className="px-4 py-3 font-semibold">Pengguna</th>
-                                        <th className="px-4 py-3 font-semibold">Email</th>
-                                        <th className="px-4 py-3 font-semibold">Peran (Role)</th>
-                                        <th className="px-4 py-3 font-semibold">Status</th>
+                                        <SortableHeader column="name" label="Pengguna" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="email" label="Email" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="role_id" label="Peran (Role)" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="email_verified_at" label="Status" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
                                         <th className="px-4 py-3 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>

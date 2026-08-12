@@ -18,6 +18,10 @@ export interface UserItem {
 export interface UserFilters {
     search?: string;
     role?: string;
+    sort_by?: string;
+    sort_dir?: string;
+    sort?: string;
+    direction?: string;
 }
 
 export interface PaginatedData<T> {

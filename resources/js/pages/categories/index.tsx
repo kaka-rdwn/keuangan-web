@@ -2,6 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Can } from '@/components/can';
+import { SortableHeader } from '@/components/sortable-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,6 +36,8 @@ interface Props {
     filters: {
         search?: string;
         type?: string;
+        sort_by?: string;
+        sort_dir?: string;
         sort?: string;
         direction?: string;
     };
@@ -52,6 +55,31 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
 
     const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
 
+    const handleTypeFilterChange = (val: string) => {
+        setSelectedType(val);
+    };
+
+    const sortBy = filters.sort_by || filters.sort || 'created_at';
+    const sortDir = filters.sort_dir || filters.direction || 'desc';
+
+    const handleSort = (column: string) => {
+        const isSameColumn = sortBy === column;
+        const nextDir = isSameColumn ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+
+        router.get(
+            categoriesIndex.url({
+                query: {
+                    search: search || undefined,
+                    type: selectedType !== 'all' ? selectedType : undefined,
+                    sort_by: column,
+                    sort_dir: nextDir,
+                },
+            }),
+            {},
+            { preserveState: true, replace: true }
+        );
+    };
+
     // Debounced automatic search & filter effect
     useEffect(() => {
         if (isFirstRender.current) {
@@ -66,6 +94,8 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                     query: {
                         search: search || undefined,
                         type: selectedType !== 'all' ? selectedType : undefined,
+                        sort_by: sortBy,
+                        sort_dir: sortDir,
                     },
                 }),
                 {},
@@ -74,27 +104,7 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
         }, 350);
 
         return () => clearTimeout(timer);
-    }, [search, selectedType]);
-
-    const handleTypeFilterChange = (val: string) => {
-        setSelectedType(val);
-    };
-
-    const handleSort = (field: string) => {
-        const direction = filters.sort === field && filters.direction === 'asc' ? 'desc' : 'asc';
-        router.get(
-            categoriesIndex.url({
-                query: {
-                    search: search || undefined,
-                    type: selectedType !== 'all' ? selectedType : undefined,
-                    sort: field,
-                    direction,
-                },
-            }),
-            {},
-            { preserveState: true, replace: true }
-        );
-    };
+    }, [search, selectedType, sortBy, sortDir]);
 
     const handleDeleteConfirm = () => {
         if (!deletingCategory) {
@@ -165,33 +175,10 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                             <table className="w-full text-left text-sm">
                                 <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                                     <tr>
-                                        <th
-                                            className="px-4 py-3 font-semibold cursor-pointer hover:bg-muted/80 select-none"
-                                            onClick={() => handleSort('name')}
-                                        >
-                                            <div className="flex items-center gap-1">
-                                                <span>Nama Kategori</span>
-                                                {filters.sort === 'name' && (
-                                                    <span className="text-primary">
-                                                        {filters.direction === 'asc' ? '↑' : '↓'}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </th>
-                                        <th
-                                            className="px-4 py-3 font-semibold cursor-pointer hover:bg-muted/80 select-none"
-                                            onClick={() => handleSort('type')}
-                                        >
-                                            <div className="flex items-center gap-1">
-                                                <span>Tipe</span>
-                                                {filters.sort === 'type' && (
-                                                    <span className="text-primary">
-                                                        {filters.direction === 'asc' ? '↑' : '↓'}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </th>
-                                        <th className="px-4 py-3 font-semibold">Deskripsi</th>
+                                        <SortableHeader column="name" label="Nama Kategori" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="type" label="Tipe" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="description" label="Deskripsi" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="created_at" label="Tanggal Dibuat" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
                                         <th className="px-4 py-3 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>

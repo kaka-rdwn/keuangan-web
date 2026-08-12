@@ -24,11 +24,14 @@ class CategoryController extends Controller
     {
         Gate::authorize('category.view');
 
-        $filters = $request->only(['search', 'type', 'sort', 'direction']);
+        $sortBy = $request->input('sort_by') ?? $request->input('sort');
+        $sortDir = $request->input('sort_dir') ?? $request->input('direction');
+
+        $filters = $request->only(['search', 'type']);
 
         $categories = Category::query()
             ->filter($filters)
-            ->sortBy($filters['sort'] ?? null, $filters['direction'] ?? null)
+            ->sortBy($sortBy, $sortDir)
             ->paginate(10)
             ->withQueryString();
 
@@ -37,8 +40,8 @@ class CategoryController extends Controller
             'filters' => [
                 'search' => $filters['search'] ?? null,
                 'type' => $filters['type'] ?? null,
-                'sort' => $filters['sort'] ?? 'created_at',
-                'direction' => $filters['direction'] ?? 'desc',
+                'sort_by' => $sortBy ?? 'created_at',
+                'sort_dir' => $sortDir ?? 'desc',
             ],
             'can' => [
                 'create' => Gate::allows('category.create'),

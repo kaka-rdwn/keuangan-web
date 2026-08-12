@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Can } from '@/components/can';
+import { SortableHeader } from '@/components/sortable-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,6 +50,8 @@ interface Props {
         category_id?: string;
         date_from?: string;
         date_to?: string;
+        sort_by?: string;
+        sort_dir?: string;
         sort?: string;
         direction?: string;
     };
@@ -78,9 +81,32 @@ export default function CashflowsIndex({
     const [selectedCategory, setSelectedCategory] = useState(filters.category_id ?? 'all');
     const [dateFrom, setDateFrom] = useState(filters.date_from ?? '');
     const [dateTo, setDateTo] = useState(filters.date_to ?? '');
+    const sortBy = filters.sort_by || filters.sort || 'transaction_date';
+    const sortDir = filters.sort_dir || filters.direction || 'desc';
     const isFirstRender = useRef(true);
 
     const [deletingCashflow, setDeletingCashflow] = useState<Cashflow | null>(null);
+
+    const handleSort = (column: string) => {
+        const isSameColumn = sortBy === column;
+        const nextDir = isSameColumn ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+
+        router.get(
+            cashflowsIndex.url({
+                query: {
+                    search: search || undefined,
+                    type: selectedType !== 'all' ? selectedType : undefined,
+                    category_id: selectedCategory !== 'all' ? selectedCategory : undefined,
+                    date_from: dateFrom || undefined,
+                    date_to: dateTo || undefined,
+                    sort_by: column,
+                    sort_dir: nextDir,
+                },
+            }),
+            {},
+            { preserveState: true, replace: true }
+        );
+    };
 
     // Debounced search effect
     useEffect(() => {
@@ -99,6 +125,8 @@ export default function CashflowsIndex({
                         category_id: selectedCategory !== 'all' ? selectedCategory : undefined,
                         date_from: dateFrom || undefined,
                         date_to: dateTo || undefined,
+                        sort_by: sortBy,
+                        sort_dir: sortDir,
                     },
                 }),
                 {},
@@ -107,7 +135,7 @@ export default function CashflowsIndex({
         }, 350);
 
         return () => clearTimeout(timer);
-    }, [search, selectedType, selectedCategory, dateFrom, dateTo]);
+    }, [search, selectedType, selectedCategory, dateFrom, dateTo, sortBy, sortDir]);
 
     const handleFilterChange = (key: string, value: string) => {
         if (key === 'type') {
@@ -287,11 +315,11 @@ export default function CashflowsIndex({
                             <table className="w-full text-left text-sm">
                                 <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                                     <tr>
-                                        <th className="px-4 py-3 font-semibold">Tanggal</th>
-                                        <th className="px-4 py-3 font-semibold">Nama & Deskripsi</th>
-                                        <th className="px-4 py-3 font-semibold">Kategori</th>
-                                        <th className="px-4 py-3 font-semibold">Tipe</th>
-                                        <th className="px-4 py-3 font-semibold">Nominal</th>
+                                        <SortableHeader column="transaction_date" label="Tanggal" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="name" label="Nama & Deskripsi" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="category_id" label="Kategori" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="type" label="Tipe" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="amount" label="Nominal" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
                                         <th className="px-4 py-3 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>

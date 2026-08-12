@@ -78,6 +78,23 @@ class User extends Authenticatable
     }
 
     /**
+     * Scope untuk mengurutkan data pengguna dengan validasi kolom dan arah pengurutan.
+     *
+     * @param  Builder<User>  $query
+     * @return Builder<User>
+     */
+    public function scopeSortBy(Builder $query, ?string $sort = null, ?string $direction = null): Builder
+    {
+        $allowedSorts = ['name', 'email', 'role_id', 'email_verified_at', 'created_at'];
+        $sortColumn = (is_string($sort) && in_array($sort, $allowedSorts, true)) ? $sort : 'created_at';
+
+        $allowedDirections = ['asc', 'desc'];
+        $sortDirection = (is_string($direction) && in_array($direction, $allowedDirections, true)) ? $direction : 'desc';
+
+        return $query->orderBy($sortColumn, $sortDirection);
+    }
+
+    /**
      * Menyinkronkan permission default pengguna berdasarkan peran (role) yang diberikan.
      */
     public function syncRolePermissions(Role $role): void
