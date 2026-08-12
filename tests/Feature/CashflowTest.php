@@ -118,5 +118,23 @@ test('user with delete permission can soft delete cashflow transaction', functio
     $response->assertRedirect();
     $this->assertSoftDeleted('cashflows', [
         'id' => $cashflow->id,
+        'updated_by' => $user->id,
     ]);
+});
+
+test('soft deleted cashflows are excluded from index listing by default', function () {
+    $role = Role::firstOrCreate(['name' => 'User']);
+    $permission = Permission::firstOrCreate(['name' => 'cashflow.view'], ['display_name' => 'Lihat Cashflow']);
+    $user = User::factory()->create(['role_id' => $role->id]);
+    $user->permissions()->attach($permission->id);
+
+    $activeCashflow = Cashflow::factory()->create(['name' => 'Active Item']);
+    $deletedCashflow = Cashflow::factory()->create(['name' => 'Deleted Item']);
+    $deletedCashflow->delete();
+
+    $response = $this->actingAs($user)->get(route('cashflows.index'));
+
+    $response->assertOk();
+    $response->assertDontSee('Deleted Item');
+    $response->assertSee('Active Item');
 });

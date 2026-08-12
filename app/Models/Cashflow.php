@@ -56,6 +56,7 @@ class Cashflow extends Model
             'amount' => MoneyCast::class,
             'type' => CashflowType::class,
             'transaction_date' => 'date:Y-m-d',
+            'deleted_at' => 'datetime',
         ];
     }
 
@@ -105,7 +106,7 @@ class Cashflow extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withTrashed();
     }
 
     /**

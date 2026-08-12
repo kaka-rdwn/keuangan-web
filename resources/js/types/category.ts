@@ -11,6 +11,7 @@ export interface Category {
     updater?: { id: number; name: string } | null;
     createdBy?: { id: number; name: string } | null;
     updatedBy?: { id: number; name: string } | null;
+    deleted_at?: string | null;
     created_at?: string;
     updated_at?: string;
 }

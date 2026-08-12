@@ -163,7 +163,14 @@ class CashflowController extends Controller
     {
         Gate::authorize('cashflow.delete');
 
-        $cashflow->delete();
+        DB::transaction(function () use ($cashflow) {
+            if (auth()->check()) {
+                $cashflow->updated_by = auth()->id();
+                $cashflow->save();
+            }
+
+            $cashflow->delete();
+        });
 
         Inertia::flash('toast', [
             'type' => 'success',

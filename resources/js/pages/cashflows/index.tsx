@@ -339,7 +339,18 @@ export default function CashflowsIndex({
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3 text-muted-foreground">
-                                                    {cashflow.category?.name || '-'}
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        <span>{cashflow.category?.name ?? '-'}</span>
+                                                        {cashflow.category?.deleted_at && (
+                                                            <Badge
+                                                                variant="outline"
+                                                                className="text-[10px] bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
+                                                                title="Kategori ini telah dihapus"
+                                                            >
+                                                                Dihapus
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {cashflow.type === 'inflow' ? (
