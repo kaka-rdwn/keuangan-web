@@ -22,7 +22,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { formatPaginationLabel } from '@/lib/utils';
+import { formatDate, formatPaginationLabel } from '@/lib/utils';
 import {
     create as categoriesCreate,
     destroy as categoriesDestroy,
@@ -203,6 +203,9 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                                 <td className="px-4 py-3 text-muted-foreground">
                                                     {category.description || '-'}
                                                 </td>
+                                                <td className="px-4 py-3 text-xs font-mono text-muted-foreground whitespace-nowrap">
+                                                    {formatDate(category.created_at)}
+                                                </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">
                                                         {canEdit && (
@@ -237,7 +240,7 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                                            <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                                                 Tidak ada data kategori ditemukan.
                                             </td>
                                         </tr>

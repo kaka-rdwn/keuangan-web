@@ -21,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { formatPaginationLabel } from '@/lib/utils';
+import { formatDate, formatPaginationLabel } from '@/lib/utils';
 import {
     create as usersCreate,
     destroy as usersDestroy,
@@ -190,6 +190,7 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                         <SortableHeader column="email" label="Email" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
                                         <SortableHeader column="role_id" label="Peran (Role)" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
                                         <SortableHeader column="email_verified_at" label="Status" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
+                                        <SortableHeader column="created_at" label="Tanggal Dibuat" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
                                         <th className="px-4 py-3 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
@@ -235,6 +236,9 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                                         </Badge>
                                                     )}
                                                 </td>
+                                                <td className="px-4 py-3 text-xs font-mono text-muted-foreground whitespace-nowrap">
+                                                    {formatDate(u.created_at)}
+                                                </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">
                                                         {u.role?.name !== 'Admin' && (
@@ -274,7 +278,7 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                                            <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                                                 Tidak ada data pengguna ditemukan.
                                             </td>
                                         </tr>

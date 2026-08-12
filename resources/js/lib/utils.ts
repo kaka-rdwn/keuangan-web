@@ -18,3 +18,21 @@ export function formatPaginationLabel(label: string): string {
         .replace(/&laquo;\s*Previous/gi, '&laquo; Sebelumnya')
         .replace(/Next\s*&raquo;/gi, 'Selanjutnya &raquo;');
 }
+
+export function formatDate(dateString?: string | null): string {
+    if (!dateString) {
+        return '-';
+    }
+
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+        return dateString;
+    }
+
+    return new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    }).format(date);
+}
