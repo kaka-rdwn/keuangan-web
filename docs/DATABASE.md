@@ -24,6 +24,7 @@ erDiagram
         varchar name "not null"
         varchar password "not null"
         bigint role_id
+        timestamp email_verified_at
         timestamp deleted_at
         timestamp created_at
         timestamp updated_at
@@ -98,6 +99,7 @@ Menyimpan informasi pengguna aplikasi.
 | `email` | `varchar` | Alamat email unik |
 | `password` | `varchar` | Hash kata sandi pengguna |
 | `role_id` | `bigint` | Foreign Key mengacu pada `roles.id` |
+| `email_verified_at` | `timestamp` | Waktu verifikasi alamat email pengguna (`null` jika belum diverifikasi) |
 | `deleted_at` | `timestamp` | Waktu penghapusan (*Soft Delete*) |
 | `created_at` | `timestamp` | Waktu pembuatan akun |
 | `updated_at` | `timestamp` | Waktu pembaruan akun terakhir |
