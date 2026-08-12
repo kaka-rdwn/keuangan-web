@@ -17,9 +17,22 @@ class UserSeeder extends Seeder
     {
         $adminRole = Role::where('name', 'Admin')->first();
         $userRole = Role::where('name', 'User')->first();
+        $allPermissionIds = Permission::pluck('id');
 
-        // 1. Admin User (Hak Akses Penuh)
-        $admin = User::firstOrCreate(
+        // 1. Admin User Utama (admin@gmail.com)
+        $adminGmail = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin Utama',
+                'password' => Hash::make('password'),
+                'role_id' => $adminRole?->id,
+                'email_verified_at' => now(),
+            ]
+        );
+        $adminGmail->permissions()->sync($allPermissionIds);
+
+        // 2. Admin User Sekunder (admin@keuangan.test)
+        $adminTest = User::firstOrCreate(
             ['email' => 'admin@keuangan.test'],
             [
                 'name' => 'Administrator',
@@ -28,12 +41,9 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+        $adminTest->permissions()->sync($allPermissionIds);
 
-        // Sync seluruh permission ke Admin
-        $allPermissionIds = Permission::pluck('id');
-        $admin->permissions()->sync($allPermissionIds);
-
-        // 2. Regular User
+        // 3. Regular User
         $user = User::firstOrCreate(
             ['email' => 'user@keuangan.test'],
             [
@@ -44,7 +54,6 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Sync permission standar ke Regular User
         $userPermissionIds = Permission::whereIn('name', [
             'cashflow.view',
             'cashflow.create',
