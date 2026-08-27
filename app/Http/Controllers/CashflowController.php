@@ -165,7 +165,7 @@ class CashflowController extends Controller
 
         DB::transaction(function () use ($cashflow) {
             if (auth()->check()) {
-                $cashflow->updated_by = auth()->id();
+                $cashflow->updated_by = (int) auth()->id();
                 $cashflow->save();
             }
 

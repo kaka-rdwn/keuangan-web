@@ -7,20 +7,18 @@ import {
     TrendingDown,
     TrendingUp,
     Wallet,
-} from 'lucide-react';
-import { useMemo } from 'react';
 import {
-    Bar,
-    BarChart,
-    Cell,
-    Legend,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
+        Bar,
+        BarChart,
+        Cell,
+        Legend,
+        Pie,
+        PieChart,
+        ResponsiveContainer,
+        Tooltip,
+        XAxis,
+        YAxis,
+    } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -200,8 +198,8 @@ export default function Dashboard({
                         <CardContent>
                             <div
                                 className={`text-2xl font-bold ${metrics.net_balance >= 0
-                                        ? 'text-foreground'
-                                        : 'text-rose-600 dark:text-rose-400'
+                                    ? 'text-foreground'
+                                    : 'text-rose-600 dark:text-rose-400'
                                     }`}
                             >
                                 {formatRupiah(metrics.net_balance)}
