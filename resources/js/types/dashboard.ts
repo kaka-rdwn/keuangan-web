@@ -31,6 +31,8 @@ export interface DashboardProps {
     monthly_trend: MonthlyTrendData[];
     category_distribution: CategoryDistributionData[];
     recent_transactions: Cashflow[];
+    available_years: number[];
+    selected_year: number;
     filters: {
         month: number;
         year: number;

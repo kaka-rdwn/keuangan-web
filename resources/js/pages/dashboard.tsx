@@ -62,14 +62,10 @@ export default function Dashboard({
     monthly_trend,
     category_distribution,
     recent_transactions,
+    available_years,
+    selected_year,
     filters,
 }: DashboardProps) {
-    const yearsList = useMemo(() => {
-        const currentY = new Date().getFullYear();
-
-        return Array.from({ length: 5 }, (_, i) => currentY - 2 + i);
-    }, []);
-
     const handleFilterChange = (key: 'month' | 'year', val: string) => {
         const nextQuery = {
             month: key === 'month' ? val : filters.month.toString(),
@@ -116,7 +112,7 @@ export default function Dashboard({
                                 <SelectValue placeholder="Pilih Tahun" />
                             </SelectTrigger>
                             <SelectContent>
-                                {yearsList.map((y) => (
+                                {available_years.map((y) => (
                                     <SelectItem key={y} value={y.toString()}>
                                         {y}
                                     </SelectItem>
@@ -198,11 +194,10 @@ export default function Dashboard({
                         </CardHeader>
                         <CardContent>
                             <div
-                                className={`text-2xl font-bold ${
-                                    metrics.net_balance >= 0
+                                className={`text-2xl font-bold ${metrics.net_balance >= 0
                                         ? 'text-foreground'
                                         : 'text-rose-600 dark:text-rose-400'
-                                }`}
+                                    }`}
                             >
                                 {formatRupiah(metrics.net_balance)}
                             </div>
@@ -246,10 +241,31 @@ export default function Dashboard({
                 <div className="grid gap-6 lg:grid-cols-7">
                     {/* Left: 12-Month Bar Chart */}
                     <Card className="lg:col-span-4 border-sidebar-border/70 dark:border-sidebar-border">
-                        <CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                             <CardTitle className="text-base font-semibold">
                                 Tren Arus Kas (12 Bulan Terakhir)
                             </CardTitle>
+                            <Select
+                                value={selected_year.toString()}
+                                onValueChange={(val) => {
+                                    router.get(
+                                        '/dashboard',
+                                        { year: val },
+                                        { preserveState: true, preserveScroll: true }
+                                    );
+                                }}
+                            >
+                                <SelectTrigger className="w-28">
+                                    <SelectValue placeholder="Pilih Tahun" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {available_years.map((y) => (
+                                        <SelectItem key={y} value={y.toString()}>
+                                            {y}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </CardHeader>
                         <CardContent>
                             <div className="h-[300px] w-full">

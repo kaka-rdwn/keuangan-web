@@ -27,7 +27,9 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         $currentMonth = (int) now()->format('n');
-        $currentYear = (int) now()->format('Y');
+        $currentYear = (int) now()->year;
+
+        $availableYears = $this->analyticsService->getAvailableYears();
 
         $month = (int) $request->input('month', $currentMonth);
         if ($month < 1 || $month > 12) {
@@ -40,7 +42,7 @@ class DashboardController extends Controller
         }
 
         $metrics = $this->analyticsService->getMetrics($month, $year);
-        $monthlyTrend = $this->analyticsService->getMonthlyTrend($month, $year);
+        $monthlyTrend = $this->analyticsService->getMonthlyTrend($year);
         $categoryDistribution = $this->analyticsService->getCategoryDistribution($month, $year);
         $recentTransactions = $this->analyticsService->getRecentTransactions(5);
 
@@ -49,6 +51,8 @@ class DashboardController extends Controller
             'monthly_trend' => $monthlyTrend,
             'category_distribution' => $categoryDistribution,
             'recent_transactions' => $recentTransactions,
+            'available_years' => $availableYears,
+            'selected_year' => $year,
             'filters' => [
                 'month' => $month,
                 'year' => $year,

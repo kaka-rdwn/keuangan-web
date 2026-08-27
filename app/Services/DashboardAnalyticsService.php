@@ -6,6 +6,7 @@ use App\Enums\CashflowType;
 use App\Models\Cashflow;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardAnalyticsService
 {
@@ -120,16 +121,47 @@ class DashboardAnalyticsService
     }
 
     /**
-     * Menghitung tren bulanan perbandingan Pemasukan vs Pengeluaran selama 12 bulan terakhir.
+     * Mengambil daftar tahun unik transaksi yang ada di database ditambah tahun berjalan.
      *
-     * @param  int  $endMonth  Bulan akhir (default: bulan berjalan).
-     * @param  int  $endYear  Tahun akhir (default: tahun berjalan).
+     * @return array<int, int> Array daftar tahun terurut secara descending.
+     */
+    public function getAvailableYears(): array
+    {
+        $driver = DB::getDriverName();
+        $yearExpression = match ($driver) {
+            'sqlite' => "strftime('%Y', transaction_date)",
+            'pgsql' => 'EXTRACT(YEAR FROM transaction_date)',
+            default => 'YEAR(transaction_date)',
+        };
+
+        $dbYears = Cashflow::query()
+            ->selectRaw("{$yearExpression} as year")
+            ->whereNotNull('transaction_date')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn ($y) => (int) $y)
+            ->filter(fn ($y) => $y > 0)
+            ->toArray();
+
+        $currentYear = (int) now()->year;
+
+        return collect(array_merge($dbYears, [$currentYear]))
+            ->unique()
+            ->sortDesc()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Menghitung tren bulanan perbandingan Pemasukan vs Pengeluaran selama 12 bulan pada tahun tertentu.
+     *
+     * @param  int  $year  Tahun aktif.
      * @return array<int, array{month_year: string, label: string, inflow: int, outflow: int}> Array data tren grafik per bulan.
      */
-    public function getMonthlyTrend(int $endMonth, int $endYear): array
+    public function getMonthlyTrend(int $year): array
     {
-        $endDate = Carbon::createFromDate($endYear, $endMonth, 1)->endOfMonth();
-        $startDate = (clone $endDate)->subMonths(11)->startOfMonth();
+        $startDate = Carbon::createFromDate($year, 1, 1)->startOfMonth();
+        $endDate = Carbon::createFromDate($year, 12, 31)->endOfMonth();
 
         $cashflows = Cashflow::query()
             ->whereBetween('transaction_date', [$startDate->toDateString(), $endDate->toDateString()])
@@ -153,9 +185,8 @@ class DashboardAnalyticsService
         }
 
         $result = [];
-        $cursor = clone $startDate;
-
-        while ($cursor->lessThanOrEqualTo($endDate)) {
+        for ($m = 1; $m <= 12; $m++) {
+            $cursor = Carbon::createFromDate($year, $m, 1);
             $monthKey = $cursor->format('Y-m');
             $label = $cursor->translatedFormat('M Y');
 
@@ -168,8 +199,6 @@ class DashboardAnalyticsService
                 'inflow' => $inflow,
                 'outflow' => $outflow,
             ];
-
-            $cursor->addMonth();
         }
 
         return $result;
