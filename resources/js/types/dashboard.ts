@@ -29,10 +29,12 @@ export interface CategoryDistributionData {
 export interface DashboardProps {
     metrics: DashboardMetrics;
     monthly_trend: MonthlyTrendData[];
+    chart_data: MonthlyTrendData[];
     category_distribution: CategoryDistributionData[];
     recent_transactions: Cashflow[];
     available_years: number[];
     selected_year: number;
+    selected_period: 'monthly' | 'quarterly';
     filters: {
         month: number;
         year: number;

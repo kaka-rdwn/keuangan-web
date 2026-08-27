@@ -41,18 +41,23 @@ class DashboardController extends Controller
             $year = $currentYear;
         }
 
+        $periodInput = (string) $request->input('period', $request->input('period_type', 'monthly'));
+        $period = in_array($periodInput, ['monthly', 'quarterly'], true) ? $periodInput : 'monthly';
+
         $metrics = $this->analyticsService->getMetrics($month, $year);
-        $monthlyTrend = $this->analyticsService->getMonthlyTrend($year);
+        $monthlyTrend = $this->analyticsService->getMonthlyTrend($year, $period);
         $categoryDistribution = $this->analyticsService->getCategoryDistribution($month, $year);
         $recentTransactions = $this->analyticsService->getRecentTransactions(5);
 
         return Inertia::render('dashboard', [
             'metrics' => $metrics,
             'monthly_trend' => $monthlyTrend,
+            'chart_data' => $monthlyTrend,
             'category_distribution' => $categoryDistribution,
             'recent_transactions' => $recentTransactions,
             'available_years' => $availableYears,
             'selected_year' => $year,
+            'selected_period' => $period,
             'filters' => [
                 'month' => $month,
                 'year' => $year,

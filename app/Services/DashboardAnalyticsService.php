@@ -139,8 +139,8 @@ class DashboardAnalyticsService
             ->whereNotNull('transaction_date')
             ->distinct()
             ->pluck('year')
-            ->map(fn ($y) => (int) $y)
-            ->filter(fn ($y) => $y > 0)
+            ->map(fn($y) => (int) $y)
+            ->filter(fn($y) => $y > 0)
             ->toArray();
 
         $currentYear = (int) now()->year;
@@ -153,12 +153,13 @@ class DashboardAnalyticsService
     }
 
     /**
-     * Menghitung tren bulanan perbandingan Pemasukan vs Pengeluaran selama 12 bulan pada tahun tertentu.
+     * Menghitung tren perbandingan Pemasukan vs Pengeluaran (Per Bulan / Per Kuartal) pada tahun tertentu.
      *
      * @param  int  $year  Tahun aktif.
-     * @return array<int, array{month_year: string, label: string, inflow: int, outflow: int}> Array data tren grafik per bulan.
+     * @param  string  $period  Tipe periode agregasi ('monthly' atau 'quarterly').
+     * @return array<int, array{month_year?: string, period_key: string, label: string, inflow: int, outflow: int}> Array data tren grafik.
      */
-    public function getMonthlyTrend(int $year): array
+    public function getMonthlyTrend(int $year, string $period = 'monthly'): array
     {
         $startDate = Carbon::createFromDate($year, 1, 1)->startOfMonth();
         $endDate = Carbon::createFromDate($year, 12, 31)->endOfMonth();
@@ -166,6 +167,52 @@ class DashboardAnalyticsService
         $cashflows = Cashflow::query()
             ->whereBetween('transaction_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->get();
+
+        if ($period === 'quarterly') {
+            $quarterDefs = [
+                'Q1' => 'Kuartal 1',
+                'Q2' => 'Kuartal 2',
+                'Q3' => 'Kuartal 3',
+                'Q4' => 'Kuartal 4',
+            ];
+
+            $trendMap = [
+                'Q1' => ['inflow' => 0, 'outflow' => 0],
+                'Q2' => ['inflow' => 0, 'outflow' => 0],
+                'Q3' => ['inflow' => 0, 'outflow' => 0],
+                'Q4' => ['inflow' => 0, 'outflow' => 0],
+            ];
+
+            foreach ($cashflows as $item) {
+                $month = (int) Carbon::parse($item->transaction_date)->month;
+                $qKey = match (true) {
+                    $month <= 3 => 'Q1',
+                    $month <= 6 => 'Q2',
+                    $month <= 9 => 'Q3',
+                    default => 'Q4',
+                };
+                $type = $item->type->value;
+                $amount = (int) $item->amount;
+
+                if ($type === CashflowType::INFLOW->value) {
+                    $trendMap[$qKey]['inflow'] += $amount;
+                } else {
+                    $trendMap[$qKey]['outflow'] += $amount;
+                }
+            }
+
+            $result = [];
+            foreach ($quarterDefs as $key => $label) {
+                $result[] = [
+                    'period_key' => $key,
+                    'label' => $label,
+                    'inflow' => $trendMap[$key]['inflow'],
+                    'outflow' => $trendMap[$key]['outflow'],
+                ];
+            }
+
+            return $result;
+        }
 
         $trendMap = [];
         foreach ($cashflows as $item) {
@@ -195,6 +242,7 @@ class DashboardAnalyticsService
 
             $result[] = [
                 'month_year' => $monthKey,
+                'period_key' => $monthKey,
                 'label' => $label,
                 'inflow' => $inflow,
                 'outflow' => $outflow,

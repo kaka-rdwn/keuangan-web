@@ -26,7 +26,7 @@ test('authenticated users can visit the dashboard and see metrics', function () 
 
     $response->assertOk()
         ->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('dashboard')
                 ->has('metrics')
                 ->has('monthly_trend')
@@ -82,7 +82,7 @@ test('dashboard filters monthly trend by selected year parameter', function () {
 
     $response->assertOk()
         ->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('dashboard')
                 ->where('selected_year', 2024)
                 ->has('monthly_trend', 12)
@@ -99,9 +99,10 @@ test('dashboard renders 12 months with nominal 0 when selected year has no trans
 
     $response->assertOk()
         ->assertInertia(
-            fn($page) => $page
+            fn ($page) => $page
                 ->component('dashboard')
                 ->where('selected_year', 2020)
+                ->where('selected_period', 'monthly')
                 ->has('monthly_trend', 12)
                 ->where('monthly_trend.0.month_year', '2020-01')
                 ->where('monthly_trend.0.inflow', 0)
@@ -109,5 +110,52 @@ test('dashboard renders 12 months with nominal 0 when selected year has no trans
                 ->where('monthly_trend.11.month_year', '2020-12')
                 ->where('monthly_trend.11.inflow', 0)
                 ->where('monthly_trend.11.outflow', 0)
+        );
+});
+
+test('dashboard aggregates trend by quarterly period when period parameter is quarterly', function () {
+    $user = User::factory()->create();
+
+    // Q1 transaction (Feb)
+    Cashflow::factory()->create([
+        'type' => CashflowType::INFLOW,
+        'amount' => 1000000,
+        'transaction_date' => '2024-02-10',
+    ]);
+    // Q1 transaction (Mar)
+    Cashflow::factory()->create([
+        'type' => CashflowType::INFLOW,
+        'amount' => 1500000,
+        'transaction_date' => '2024-03-20',
+    ]);
+    // Q3 transaction (Aug)
+    Cashflow::factory()->create([
+        'type' => CashflowType::OUTFLOW,
+        'amount' => 800000,
+        'transaction_date' => '2024-08-05',
+    ]);
+
+    $response = $this->actingAs($user)
+        ->get(route('dashboard', ['year' => 2024, 'period' => 'quarterly']));
+
+    $response->assertOk()
+        ->assertInertia(
+            fn ($page) => $page
+                ->component('dashboard')
+                ->where('selected_year', 2024)
+                ->where('selected_period', 'quarterly')
+                ->has('chart_data', 4)
+                ->where('chart_data.0.period_key', 'Q1')
+                ->where('chart_data.0.label', 'Kuartal 1')
+                ->where('chart_data.0.inflow', 2500000)
+                ->where('chart_data.0.outflow', 0)
+                ->where('chart_data.1.period_key', 'Q2')
+                ->where('chart_data.1.label', 'Kuartal 2')
+                ->where('chart_data.1.inflow', 0)
+                ->where('chart_data.2.period_key', 'Q3')
+                ->where('chart_data.2.label', 'Kuartal 3')
+                ->where('chart_data.2.outflow', 800000)
+                ->where('chart_data.3.period_key', 'Q4')
+                ->where('chart_data.3.label', 'Kuartal 4')
         );
 });

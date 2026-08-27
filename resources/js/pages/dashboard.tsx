@@ -60,20 +60,25 @@ const MONTH_NAMES = [
 export default function Dashboard({
     metrics,
     monthly_trend,
+    chart_data,
     category_distribution,
     recent_transactions,
     available_years,
     selected_year,
+    selected_period = 'monthly',
     filters,
 }: DashboardProps) {
     const handleFilterChange = (key: 'month' | 'year', val: string) => {
         const nextQuery = {
             month: key === 'month' ? val : filters.month.toString(),
             year: key === 'year' ? val : filters.year.toString(),
+            period: selected_period,
         };
 
         router.get('/dashboard', nextQuery, { preserveState: true });
     };
+
+    const trendChartData = chart_data || monthly_trend;
 
     return (
         <>
@@ -239,38 +244,59 @@ export default function Dashboard({
 
                 {/* Section 2: Visual Charts Grid */}
                 <div className="grid gap-6 lg:grid-cols-7">
-                    {/* Left: 12-Month Bar Chart */}
+                    {/* Left: Bar Chart */}
                     <Card className="lg:col-span-4 border-sidebar-border/70 dark:border-sidebar-border">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between space-y-0 pb-4">
                             <CardTitle className="text-base font-semibold">
-                                Tren Arus Kas (12 Bulan Terakhir)
+                                Tren Arus Kas
                             </CardTitle>
-                            <Select
-                                value={selected_year.toString()}
-                                onValueChange={(val) => {
-                                    router.get(
-                                        '/dashboard',
-                                        { year: val },
-                                        { preserveState: true, preserveScroll: true }
-                                    );
-                                }}
-                            >
-                                <SelectTrigger className="w-28">
-                                    <SelectValue placeholder="Pilih Tahun" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {available_years.map((y) => (
-                                        <SelectItem key={y} value={y.toString()}>
-                                            {y}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="flex items-center gap-2">
+                                <Select
+                                    value={selected_period}
+                                    onValueChange={(val) => {
+                                        router.get(
+                                            '/dashboard',
+                                            { year: selected_year.toString(), period: val },
+                                            { preserveState: true, preserveScroll: true }
+                                        );
+                                    }}
+                                >
+                                    <SelectTrigger className="w-32">
+                                        <SelectValue placeholder="Pilih Periode" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="monthly">Per Bulan</SelectItem>
+                                        <SelectItem value="quarterly">Per Kuartal</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                <Select
+                                    value={selected_year.toString()}
+                                    onValueChange={(val) => {
+                                        router.get(
+                                            '/dashboard',
+                                            { year: val, period: selected_period },
+                                            { preserveState: true, preserveScroll: true }
+                                        );
+                                    }}
+                                >
+                                    <SelectTrigger className="w-28">
+                                        <SelectValue placeholder="Pilih Tahun" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {available_years.map((y) => (
+                                            <SelectItem key={y} value={y.toString()}>
+                                                {y}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={monthly_trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <BarChart data={trendChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                         <XAxis dataKey="label" stroke="#888888" fontSize={11} tickLine={false} axisLine={false} />
                                         <YAxis
                                             stroke="#888888"
