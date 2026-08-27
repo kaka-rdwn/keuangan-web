@@ -1,5 +1,13 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit2, Key, Search, ShieldAlert, Trash2, UserCheck, UserPlus } from 'lucide-react';
+import {
+    Edit2,
+    Key,
+    Search,
+    ShieldAlert,
+    Trash2,
+    UserCheck,
+    UserPlus,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { SortableHeader } from '@/components/sortable-header';
 import { Badge } from '@/components/ui/badge';
@@ -34,7 +42,8 @@ import type { UserItem, UserListProps } from '@/types/user';
 export default function UsersIndex({ users, roles, filters }: UserListProps) {
     const pageProps = usePage<PageProps>().props;
     const authUser = pageProps.auth.user;
-    const flash = (pageProps as Record<string, unknown>).flash as { success?: string; error?: string } | undefined;
+    const flash = (pageProps as Record<string, unknown>).flash as
+        { success?: string; error?: string } | undefined;
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [selectedRole, setSelectedRole] = useState(filters.role ?? 'all');
@@ -48,7 +57,11 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
 
     const handleSort = (column: string) => {
         const isSameColumn = sortBy === column;
-        const nextDir = isSameColumn ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+        const nextDir = isSameColumn
+            ? sortDir === 'asc'
+                ? 'desc'
+                : 'asc'
+            : 'asc';
 
         router.get(
             usersIndex.url({
@@ -60,7 +73,7 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                 },
             }),
             {},
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true },
         );
     };
 
@@ -83,7 +96,7 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                     },
                 }),
                 {},
-                { preserveState: true, replace: true }
+                { preserveState: true, replace: true },
             );
         }, 350);
 
@@ -124,13 +137,13 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 md:p-6">
                 {/* Flash Messages */}
                 {flash?.success && (
-                    <div className="flex items-center gap-2 rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
                         <UserCheck className="h-4 w-4 shrink-0" />
                         <span>{flash.success}</span>
                     </div>
                 )}
                 {(flash?.error || errorMessage) && (
-                    <div className="flex items-center gap-2 rounded-lg bg-rose-50 p-4 text-sm text-rose-800 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                    <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-300">
                         <ShieldAlert className="h-4 w-4 shrink-0" />
                         <span>{flash?.error || errorMessage}</span>
                     </div>
@@ -139,9 +152,12 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                 <Card className="border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <CardTitle className="text-xl font-bold">Manajemen Pengguna</CardTitle>
+                            <CardTitle className="text-xl font-bold">
+                                Manajemen Pengguna
+                            </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                Kelola data pengguna, penetapan peran (role), dan pembuatan akun baru.
+                                Kelola data pengguna, penetapan peran (role),
+                                dan pembuatan akun baru.
                             </p>
                         </div>
                         <Button asChild className="gap-2">
@@ -155,7 +171,7 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                         {/* Filters & Search */}
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     type="text"
                                     placeholder="Cari nama atau email..."
@@ -165,14 +181,22 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                 />
                             </div>
                             <div className="w-full sm:w-48">
-                                <Select value={selectedRole} onValueChange={handleRoleFilterChange}>
+                                <Select
+                                    value={selectedRole}
+                                    onValueChange={handleRoleFilterChange}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Semua Peran" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">Semua Peran</SelectItem>
+                                        <SelectItem value="all">
+                                            Semua Peran
+                                        </SelectItem>
                                         {roles.map((r) => (
-                                            <SelectItem key={r.id} value={r.name}>
+                                            <SelectItem
+                                                key={r.id}
+                                                value={r.name}
+                                            >
                                                 {r.name}
                                             </SelectItem>
                                         ))}
@@ -184,28 +208,73 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                         {/* Data Table */}
                         <div className="overflow-hidden rounded-md border border-sidebar-border/70 dark:border-sidebar-border">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                                <thead className="bg-muted/50 text-xs tracking-wider text-muted-foreground uppercase">
                                     <tr>
-                                        <SortableHeader column="name" label="Pengguna" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="email" label="Email" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="role_id" label="Peran (Role)" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="email_verified_at" label="Status" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="created_at" label="Tanggal Dibuat" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <th className="px-4 py-3 text-right font-semibold">Aksi</th>
+                                        <SortableHeader
+                                            column="name"
+                                            label="Pengguna"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="email"
+                                            label="Email"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="role_id"
+                                            label="Peran (Role)"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="email_verified_at"
+                                            label="Status"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="created_at"
+                                            label="Tanggal Dibuat"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <th className="px-4 py-3 text-right font-semibold">
+                                            Aksi
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-sidebar-border/70 dark:divide-sidebar-border">
                                     {users.data.length > 0 ? (
                                         users.data.map((u) => (
-                                            <tr key={u.id} className="hover:bg-muted/30 transition-colors">
+                                            <tr
+                                                key={u.id}
+                                                className="transition-colors hover:bg-muted/30"
+                                            >
                                                 <td className="px-4 py-3 font-medium text-foreground">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 font-bold text-primary text-xs">
-                                                            {u.name.charAt(0).toUpperCase()}
+                                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                                                            {u.name
+                                                                .charAt(0)
+                                                                .toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <div className="font-semibold">{u.name}</div>
-                                                            {u.id === authUser?.id && (
+                                                            <div className="font-semibold">
+                                                                {u.name}
+                                                            </div>
+                                                            {u.id ===
+                                                                authUser?.id && (
                                                                 <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
                                                                     (Akun Anda)
                                                                 </span>
@@ -213,43 +282,59 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
+                                                <td className="px-4 py-3 text-muted-foreground">
+                                                    {u.email}
+                                                </td>
                                                 <td className="px-4 py-3">
-                                                    {u.role?.name === 'Admin' ? (
-                                                        <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300 border-purple-200 dark:border-purple-800">
+                                                    {u.role?.name ===
+                                                    'Admin' ? (
+                                                        <Badge className="border-purple-200 bg-purple-100 text-purple-800 hover:bg-purple-100 dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300">
                                                             Admin
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant="outline" className="text-muted-foreground">
-                                                            {u.role?.name ?? 'User'}
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="text-muted-foreground"
+                                                        >
+                                                            {u.role?.name ??
+                                                                'User'}
                                                         </Badge>
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     {u.email_verified_at ? (
-                                                        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
+                                                        <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                             Aktif
                                                         </Badge>
                                                     ) : (
-                                                        <Badge variant="outline" className="bg-amber-50 text-amber-700 hover:bg-amber-50 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300"
+                                                        >
                                                             Belum Aktif
                                                         </Badge>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-3 text-xs font-mono text-muted-foreground whitespace-nowrap">
-                                                    {formatDate(u.created_at, true)}
+                                                <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-muted-foreground">
+                                                    {formatDate(
+                                                        u.created_at,
+                                                        true,
+                                                    )}
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        {u.role?.name !== 'Admin' && (
+                                                        {u.role?.name !==
+                                                            'Admin' && (
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 asChild
                                                                 title="Kelola Permission"
                                                             >
-                                                                <Link href={`/users/${u.id}/permissions`}>
-                                                                    <Key className="h-4 w-4 text-amber-600 dark:text-amber-400 hover:text-amber-700" />
+                                                                <Link
+                                                                    href={`/users/${u.id}/permissions`}
+                                                                >
+                                                                    <Key className="h-4 w-4 text-amber-600 hover:text-amber-700 dark:text-amber-400" />
                                                                 </Link>
                                                             </Button>
                                                         )}
@@ -259,16 +344,32 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                                             asChild
                                                             title="Ubah"
                                                         >
-                                                            <Link href={usersEdit.url(u.id)}>
+                                                            <Link
+                                                                href={usersEdit.url(
+                                                                    u.id,
+                                                                )}
+                                                            >
                                                                 <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                                             </Link>
                                                         </Button>
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            disabled={u.id === authUser?.id}
-                                                            onClick={() => setDeletingUser(u)}
-                                                            title={u.id === authUser?.id ? 'Tidak dapat menghapus akun sendiri' : 'Hapus'}
+                                                            disabled={
+                                                                u.id ===
+                                                                authUser?.id
+                                                            }
+                                                            onClick={() =>
+                                                                setDeletingUser(
+                                                                    u,
+                                                                )
+                                                            }
+                                                            title={
+                                                                u.id ===
+                                                                authUser?.id
+                                                                    ? 'Tidak dapat menghapus akun sendiri'
+                                                                    : 'Hapus'
+                                                            }
                                                         >
                                                             <Trash2 className="h-4 w-4 text-destructive disabled:opacity-30" />
                                                         </Button>
@@ -278,8 +379,12 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                                                Tidak ada data pengguna ditemukan.
+                                            <td
+                                                colSpan={6}
+                                                className="px-4 py-8 text-center text-muted-foreground"
+                                            >
+                                                Tidak ada data pengguna
+                                                ditemukan.
                                             </td>
                                         </tr>
                                     )}
@@ -291,17 +396,33 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
                         {users.links.length > 3 && (
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-sm text-muted-foreground">
                                 <div>
-                                    Menampilkan {users.from ?? 0} hingga {users.to ?? 0} dari {users.total} pengguna
+                                    Menampilkan {users.from ?? 0} hingga{' '}
+                                    {users.to ?? 0} dari {users.total} pengguna
                                 </div>
                                 <div className="flex items-center gap-1">
                                     {users.links.map((link, idx) => (
                                         <Button
                                             key={idx}
-                                            variant={link.active ? 'default' : 'outline'}
+                                            variant={
+                                                link.active
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
                                             size="sm"
                                             disabled={!link.url}
-                                            onClick={() => link.url && router.get(link.url, {}, { preserveState: true })}
-                                            dangerouslySetInnerHTML={{ __html: formatPaginationLabel(link.label) }}
+                                            onClick={() =>
+                                                link.url &&
+                                                router.get(
+                                                    link.url,
+                                                    {},
+                                                    { preserveState: true },
+                                                )
+                                            }
+                                            dangerouslySetInnerHTML={{
+                                                __html: formatPaginationLabel(
+                                                    link.label,
+                                                ),
+                                            }}
                                         />
                                     ))}
                                 </div>
@@ -312,21 +433,35 @@ export default function UsersIndex({ users, roles, filters }: UserListProps) {
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Dialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
+            <Dialog
+                open={!!deletingUser}
+                onOpenChange={(open) => !open && setDeletingUser(null)}
+            >
                 <DialogContent className="sm:max-w-[400px]">
                     <DialogHeader>
                         <DialogTitle>Konfirmasi Hapus Pengguna</DialogTitle>
                         <DialogDescription>
                             Apakah Anda yakin ingin menghapus akun pengguna{' '}
-                            <span className="font-semibold text-foreground">"{deletingUser?.name}"</span> ({deletingUser?.email})?
-                            Tindakan ini tidak dapat dibatalkan.
+                            <span className="font-semibold text-foreground">
+                                "{deletingUser?.name}"
+                            </span>{' '}
+                            ({deletingUser?.email})? Tindakan ini tidak dapat
+                            dibatalkan.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2 sm:gap-0">
-                        <Button type="button" variant="outline" onClick={() => setDeletingUser(null)}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDeletingUser(null)}
+                        >
                             Batal
                         </Button>
-                        <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={handleDeleteConfirm}
+                        >
                             Hapus
                         </Button>
                     </DialogFooter>

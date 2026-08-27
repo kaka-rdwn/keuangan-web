@@ -3,10 +3,22 @@ import { ArrowLeft, PlusCircle, Save } from 'lucide-react';
 import { useMemo } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { CashflowForm } from '@/types/cashflow';
 import type { CashflowType, Category } from '@/types/category';
@@ -62,7 +74,8 @@ export default function CashflowCreate({ categories }: Props) {
                             Catat Transaksi Arus Kas
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Buat pencatatan transaksi pemasukan atau pengeluaran baru.
+                            Buat pencatatan transaksi pemasukan atau pengeluaran
+                            baru.
                         </p>
                     </div>
                 </div>
@@ -70,9 +83,12 @@ export default function CashflowCreate({ categories }: Props) {
                 {/* Form Card */}
                 <Card className="border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader>
-                        <CardTitle className="text-lg font-semibold">Formulir Transaksi Baru</CardTitle>
+                        <CardTitle className="text-lg font-semibold">
+                            Formulir Transaksi Baru
+                        </CardTitle>
                         <CardDescription>
-                            Lengkapi rincian nominal, tanggal, dan kategori transaksi di bawah ini.
+                            Lengkapi rincian nominal, tanggal, dan kategori
+                            transaksi di bawah ini.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -82,13 +98,22 @@ export default function CashflowCreate({ categories }: Props) {
                                 <Label htmlFor="type" className="required">
                                     Tipe Transaksi
                                 </Label>
-                                <Select value={data.type} onValueChange={(val: CashflowType) => handleTypeChange(val)}>
+                                <Select
+                                    value={data.type}
+                                    onValueChange={(val: CashflowType) =>
+                                        handleTypeChange(val)
+                                    }
+                                >
                                     <SelectTrigger id="type">
                                         <SelectValue placeholder="Pilih Tipe Transaksi" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="inflow">Pemasukan (Inflow)</SelectItem>
-                                        <SelectItem value="outflow">Pengeluaran (Outflow)</SelectItem>
+                                        <SelectItem value="inflow">
+                                            Pemasukan (Inflow)
+                                        </SelectItem>
+                                        <SelectItem value="outflow">
+                                            Pengeluaran (Outflow)
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.type} />
@@ -104,19 +129,30 @@ export default function CashflowCreate({ categories }: Props) {
                                     type="text"
                                     placeholder="Contoh: Pembayaran Listrik, Gaji Bulanan..."
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.name} />
                             </div>
 
                             {/* Kategori Transaksi */}
                             <div className="space-y-2">
-                                <Label htmlFor="category_id" className="required">
+                                <Label
+                                    htmlFor="category_id"
+                                    className="required"
+                                >
                                     Kategori
                                 </Label>
                                 <Select
-                                    value={data.category_id ? String(data.category_id) : ''}
-                                    onValueChange={(val) => setData('category_id', val)}
+                                    value={
+                                        data.category_id
+                                            ? String(data.category_id)
+                                            : ''
+                                    }
+                                    onValueChange={(val) =>
+                                        setData('category_id', val)
+                                    }
                                 >
                                     <SelectTrigger id="category_id">
                                         <SelectValue placeholder="Pilih Kategori Transaksi" />
@@ -124,13 +160,19 @@ export default function CashflowCreate({ categories }: Props) {
                                     <SelectContent>
                                         {filteredCategories.length > 0 ? (
                                             filteredCategories.map((cat) => (
-                                                <SelectItem key={cat.id} value={String(cat.id)}>
+                                                <SelectItem
+                                                    key={cat.id}
+                                                    value={String(cat.id)}
+                                                >
                                                     {cat.name}
                                                 </SelectItem>
                                             ))
                                         ) : (
                                             <SelectItem value="none" disabled>
-                                                Tidak ada kategori {data.type === 'inflow' ? 'pemasukan' : 'pengeluaran'}
+                                                Tidak ada kategori{' '}
+                                                {data.type === 'inflow'
+                                                    ? 'pemasukan'
+                                                    : 'pengeluaran'}
                                             </SelectItem>
                                         )}
                                     </SelectContent>
@@ -141,7 +183,10 @@ export default function CashflowCreate({ categories }: Props) {
                             {/* Nominal Transaksi (Rupiah) & Tanggal */}
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="amount" className="required">
+                                    <Label
+                                        htmlFor="amount"
+                                        className="required"
+                                    >
                                         Nominal Transaksi (Rp)
                                     </Label>
                                     <Input
@@ -151,46 +196,72 @@ export default function CashflowCreate({ categories }: Props) {
                                         step="any"
                                         placeholder="0"
                                         value={data.amount}
-                                        onChange={(e) => setData('amount', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('amount', e.target.value)
+                                        }
                                     />
                                     <InputError message={errors.amount} />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="transaction_date" className="required">
+                                    <Label
+                                        htmlFor="transaction_date"
+                                        className="required"
+                                    >
                                         Tanggal Transaksi
                                     </Label>
                                     <Input
                                         id="transaction_date"
                                         type="date"
                                         value={data.transaction_date}
-                                        onChange={(e) => setData('transaction_date', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'transaction_date',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
-                                    <InputError message={errors.transaction_date} />
+                                    <InputError
+                                        message={errors.transaction_date}
+                                    />
                                 </div>
                             </div>
 
                             {/* Deskripsi / Catatan */}
                             <div className="space-y-2">
-                                <Label htmlFor="description">Catatan (Opsional)</Label>
+                                <Label htmlFor="description">
+                                    Catatan (Opsional)
+                                </Label>
                                 <Textarea
                                     id="description"
                                     placeholder="Rincian atau catatan tambahan transaksi..."
                                     value={data.description}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) => setData('description', e.target.value)}
                                     rows={4}
                                 />
                                 <InputError message={errors.description} />
                             </div>
 
                             {/* Form Actions */}
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-sidebar-border/50">
-                                <Button variant="outline" asChild disabled={processing}>
+                            <div className="flex items-center justify-end gap-3 border-t border-sidebar-border/50 pt-4">
+                                <Button
+                                    variant="outline"
+                                    asChild
+                                    disabled={processing}
+                                >
                                     <Link href="/cashflows">Batal</Link>
                                 </Button>
-                                <Button type="submit" disabled={processing} className="gap-2">
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="gap-2"
+                                >
                                     <Save className="h-4 w-4" />
-                                    {processing ? 'Menyimpan...' : 'Simpan Transaksi'}
+                                    {processing
+                                        ? 'Menyimpan...'
+                                        : 'Simpan Transaksi'}
                                 </Button>
                             </div>
                         </form>

@@ -53,7 +53,9 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
     const [selectedType, setSelectedType] = useState(filters.type ?? 'all');
     const isFirstRender = useRef(true);
 
-    const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
+    const [deletingCategory, setDeletingCategory] = useState<Category | null>(
+        null,
+    );
 
     const handleTypeFilterChange = (val: string) => {
         setSelectedType(val);
@@ -64,7 +66,11 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
 
     const handleSort = (column: string) => {
         const isSameColumn = sortBy === column;
-        const nextDir = isSameColumn ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+        const nextDir = isSameColumn
+            ? sortDir === 'asc'
+                ? 'desc'
+                : 'asc'
+            : 'asc';
 
         router.get(
             categoriesIndex.url({
@@ -76,7 +82,7 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                 },
             }),
             {},
-            { preserveState: true, replace: true }
+            { preserveState: true, replace: true },
         );
     };
 
@@ -99,7 +105,7 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                     },
                 }),
                 {},
-                { preserveState: true, replace: true }
+                { preserveState: true, replace: true },
             );
         }, 350);
 
@@ -127,9 +133,12 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                 <Card className="border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <CardTitle className="text-xl font-bold">Kategori Keuangan</CardTitle>
+                            <CardTitle className="text-xl font-bold">
+                                Kategori Keuangan
+                            </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                Kelola kategori pemasukan dan pengeluaran transaksi keuangan Anda.
+                                Kelola kategori pemasukan dan pengeluaran
+                                transaksi keuangan Anda.
                             </p>
                         </div>
                         {canCreate && (
@@ -147,7 +156,7 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                         {/* Filters & Search */}
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     type="text"
                                     placeholder="Cari nama atau deskripsi kategori..."
@@ -157,14 +166,23 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                 />
                             </div>
                             <div className="w-full sm:w-48">
-                                <Select value={selectedType} onValueChange={handleTypeFilterChange}>
+                                <Select
+                                    value={selectedType}
+                                    onValueChange={handleTypeFilterChange}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Semua Tipe" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">Semua Tipe</SelectItem>
-                                        <SelectItem value="inflow">Pemasukan</SelectItem>
-                                        <SelectItem value="outflow">Pengeluaran</SelectItem>
+                                        <SelectItem value="all">
+                                            Semua Tipe
+                                        </SelectItem>
+                                        <SelectItem value="inflow">
+                                            Pemasukan
+                                        </SelectItem>
+                                        <SelectItem value="outflow">
+                                            Pengeluaran
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -173,38 +191,76 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                         {/* Data Table */}
                         <div className="overflow-hidden rounded-md border border-sidebar-border/70 dark:border-sidebar-border">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                                <thead className="bg-muted/50 text-xs tracking-wider text-muted-foreground uppercase">
                                     <tr>
-                                        <SortableHeader column="name" label="Nama Kategori" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="type" label="Tipe" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="description" label="Deskripsi" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <SortableHeader column="created_at" label="Tanggal Dibuat" sortBy={sortBy} sortDir={sortDir} onSort={handleSort} className="px-4 py-3" />
-                                        <th className="px-4 py-3 text-right font-semibold">Aksi</th>
+                                        <SortableHeader
+                                            column="name"
+                                            label="Nama Kategori"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="type"
+                                            label="Tipe"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="description"
+                                            label="Deskripsi"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <SortableHeader
+                                            column="created_at"
+                                            label="Tanggal Dibuat"
+                                            sortBy={sortBy}
+                                            sortDir={sortDir}
+                                            onSort={handleSort}
+                                            className="px-4 py-3"
+                                        />
+                                        <th className="px-4 py-3 text-right font-semibold">
+                                            Aksi
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-sidebar-border/70 dark:divide-sidebar-border">
                                     {categories.data.length > 0 ? (
                                         categories.data.map((category) => (
-                                            <tr key={category.id} className="hover:bg-muted/30 transition-colors">
+                                            <tr
+                                                key={category.id}
+                                                className="transition-colors hover:bg-muted/30"
+                                            >
                                                 <td className="px-4 py-3 font-medium text-foreground">
                                                     {category.name}
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    {category.type === 'inflow' ? (
-                                                        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800">
+                                                    {category.type ===
+                                                    'inflow' ? (
+                                                        <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                             Pemasukan
                                                         </Badge>
                                                     ) : (
-                                                        <Badge className="bg-rose-100 text-rose-800 hover:bg-rose-100 dark:bg-rose-950 dark:text-rose-300 border-rose-200 dark:border-rose-800">
+                                                        <Badge className="border-rose-200 bg-rose-100 text-rose-800 hover:bg-rose-100 dark:border-rose-800 dark:bg-rose-950 dark:text-rose-300">
                                                             Pengeluaran
                                                         </Badge>
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3 text-muted-foreground">
-                                                    {category.description || '-'}
+                                                    {category.description ||
+                                                        '-'}
                                                 </td>
-                                                <td className="px-4 py-3 text-xs font-mono text-muted-foreground whitespace-nowrap">
-                                                    {formatDate(category.created_at, true)}
+                                                <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-muted-foreground">
+                                                    {formatDate(
+                                                        category.created_at,
+                                                        true,
+                                                    )}
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <div className="flex items-center justify-end gap-2">
@@ -216,7 +272,11 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                                                     asChild
                                                                     title="Ubah"
                                                                 >
-                                                                    <Link href={categoriesEdit.url(category.id)}>
+                                                                    <Link
+                                                                        href={categoriesEdit.url(
+                                                                            category.id,
+                                                                        )}
+                                                                    >
                                                                         <Edit2 className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                                                     </Link>
                                                                 </Button>
@@ -227,7 +287,11 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
-                                                                    onClick={() => setDeletingCategory(category)}
+                                                                    onClick={() =>
+                                                                        setDeletingCategory(
+                                                                            category,
+                                                                        )
+                                                                    }
                                                                     title="Hapus"
                                                                 >
                                                                     <Trash2 className="h-4 w-4 text-destructive" />
@@ -240,8 +304,12 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                                                Tidak ada data kategori ditemukan.
+                                            <td
+                                                colSpan={5}
+                                                className="px-4 py-8 text-center text-muted-foreground"
+                                            >
+                                                Tidak ada data kategori
+                                                ditemukan.
                                             </td>
                                         </tr>
                                     )}
@@ -253,17 +321,34 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
                         {categories.links.length > 3 && (
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-sm text-muted-foreground">
                                 <div>
-                                    Menampilkan {categories.from ?? 0} hingga {categories.to ?? 0} dari {categories.total} kategori
+                                    Menampilkan {categories.from ?? 0} hingga{' '}
+                                    {categories.to ?? 0} dari {categories.total}{' '}
+                                    kategori
                                 </div>
                                 <div className="flex items-center gap-1">
                                     {categories.links.map((link, idx) => (
                                         <Button
                                             key={idx}
-                                            variant={link.active ? 'default' : 'outline'}
+                                            variant={
+                                                link.active
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
                                             size="sm"
                                             disabled={!link.url}
-                                            onClick={() => link.url && router.get(link.url, {}, { preserveState: true })}
-                                            dangerouslySetInnerHTML={{ __html: formatPaginationLabel(link.label) }}
+                                            onClick={() =>
+                                                link.url &&
+                                                router.get(
+                                                    link.url,
+                                                    {},
+                                                    { preserveState: true },
+                                                )
+                                            }
+                                            dangerouslySetInnerHTML={{
+                                                __html: formatPaginationLabel(
+                                                    link.label,
+                                                ),
+                                            }}
                                         />
                                     ))}
                                 </div>
@@ -274,21 +359,34 @@ export default function CategoriesIndex({ categories, filters, can }: Props) {
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Dialog open={!!deletingCategory} onOpenChange={(open) => !open && setDeletingCategory(null)}>
+            <Dialog
+                open={!!deletingCategory}
+                onOpenChange={(open) => !open && setDeletingCategory(null)}
+            >
                 <DialogContent className="sm:max-w-[400px]">
                     <DialogHeader>
                         <DialogTitle>Konfirmasi Hapus Kategori</DialogTitle>
                         <DialogDescription>
                             Apakah Anda yakin ingin menghapus kategori{' '}
-                            <span className="font-semibold text-foreground">"{deletingCategory?.name}"</span>?
-                            Tindakan ini tidak dapat dibatalkan.
+                            <span className="font-semibold text-foreground">
+                                "{deletingCategory?.name}"
+                            </span>
+                            ? Tindakan ini tidak dapat dibatalkan.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="gap-2 sm:gap-0">
-                        <Button type="button" variant="outline" onClick={() => setDeletingCategory(null)}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDeletingCategory(null)}
+                        >
                             Batal
                         </Button>
-                        <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={handleDeleteConfirm}
+                        >
                             Hapus
                         </Button>
                     </DialogFooter>

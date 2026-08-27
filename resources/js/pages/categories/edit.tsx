@@ -3,10 +3,22 @@ import { ArrowLeft, Edit3, Save } from 'lucide-react';
 import { AuditMetaCard } from '@/components/audit-meta-card';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { CashflowType, Category, CategoryForm } from '@/types/category';
 
@@ -44,7 +56,11 @@ export default function CategoryEdit({ category }: Props) {
                             Ubah Kategori Keuangan
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Perbarui informasi data kategori <span className="font-semibold text-foreground">{category.name}</span>.
+                            Perbarui informasi data kategori{' '}
+                            <span className="font-semibold text-foreground">
+                                {category.name}
+                            </span>
+                            .
                         </p>
                     </div>
                 </div>
@@ -52,9 +68,12 @@ export default function CategoryEdit({ category }: Props) {
                 {/* Form Card */}
                 <Card className="border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader>
-                        <CardTitle className="text-lg font-semibold">Formulir Penyuntingan Kategori</CardTitle>
+                        <CardTitle className="text-lg font-semibold">
+                            Formulir Penyuntingan Kategori
+                        </CardTitle>
                         <CardDescription>
-                            Ubah kolom yang diperlukan lalu klik simpan perubahan.
+                            Ubah kolom yang diperlukan lalu klik simpan
+                            perubahan.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -69,7 +88,9 @@ export default function CategoryEdit({ category }: Props) {
                                     type="text"
                                     placeholder="Contoh: Gaji, Belanja Bulanan, Transportasi..."
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.name} />
                             </div>
@@ -81,14 +102,20 @@ export default function CategoryEdit({ category }: Props) {
                                 </Label>
                                 <Select
                                     value={data.type}
-                                    onValueChange={(val: CashflowType) => setData('type', val)}
+                                    onValueChange={(val: CashflowType) =>
+                                        setData('type', val)
+                                    }
                                 >
                                     <SelectTrigger id="type">
                                         <SelectValue placeholder="Pilih Tipe" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="inflow">Pemasukan (Inflow)</SelectItem>
-                                        <SelectItem value="outflow">Pengeluaran (Outflow)</SelectItem>
+                                        <SelectItem value="inflow">
+                                            Pemasukan (Inflow)
+                                        </SelectItem>
+                                        <SelectItem value="outflow">
+                                            Pengeluaran (Outflow)
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <InputError message={errors.type} />
@@ -96,25 +123,39 @@ export default function CategoryEdit({ category }: Props) {
 
                             {/* Deskripsi */}
                             <div className="space-y-2">
-                                <Label htmlFor="description">Deskripsi (Opsional)</Label>
+                                <Label htmlFor="description">
+                                    Deskripsi (Opsional)
+                                </Label>
                                 <Textarea
                                     id="description"
                                     placeholder="Catatan tambahan mengenai kategori ini..."
                                     value={data.description}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
+                                    onChange={(
+                                        e: React.ChangeEvent<HTMLTextAreaElement>,
+                                    ) => setData('description', e.target.value)}
                                     rows={4}
                                 />
                                 <InputError message={errors.description} />
                             </div>
 
                             {/* Form Actions */}
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-sidebar-border/50">
-                                <Button variant="outline" asChild disabled={processing}>
+                            <div className="flex items-center justify-end gap-3 border-t border-sidebar-border/50 pt-4">
+                                <Button
+                                    variant="outline"
+                                    asChild
+                                    disabled={processing}
+                                >
                                     <Link href="/categories">Batal</Link>
                                 </Button>
-                                <Button type="submit" disabled={processing} className="gap-2">
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="gap-2"
+                                >
                                     <Save className="h-4 w-4" />
-                                    {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                    {processing
+                                        ? 'Menyimpan...'
+                                        : 'Simpan Perubahan'}
                                 </Button>
                             </div>
                         </form>

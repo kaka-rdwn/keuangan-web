@@ -4,10 +4,22 @@ import { AuditMetaCard } from '@/components/audit-meta-card';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import type { Role, UserItem } from '@/types/user';
 
 interface Props {
@@ -47,7 +59,11 @@ export default function UserEdit({ user, roles }: Props) {
                             Ubah Pengguna
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Perbarui informasi akun dan peran pengguna <span className="font-semibold text-foreground">{user.name}</span>.
+                            Perbarui informasi akun dan peran pengguna{' '}
+                            <span className="font-semibold text-foreground">
+                                {user.name}
+                            </span>
+                            .
                         </p>
                     </div>
                 </div>
@@ -55,9 +71,12 @@ export default function UserEdit({ user, roles }: Props) {
                 {/* Form Card */}
                 <Card className="border-sidebar-border/70 dark:border-sidebar-border">
                     <CardHeader>
-                        <CardTitle className="text-lg font-semibold">Formulir Penyuntingan Pengguna</CardTitle>
+                        <CardTitle className="text-lg font-semibold">
+                            Formulir Penyuntingan Pengguna
+                        </CardTitle>
                         <CardDescription>
-                            Kosongkan kolom kata sandi jika Anda tidak ingin mengubahnya.
+                            Kosongkan kolom kata sandi jika Anda tidak ingin
+                            mengubahnya.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -72,7 +91,9 @@ export default function UserEdit({ user, roles }: Props) {
                                     type="text"
                                     placeholder="Contoh: Ahmad Rizki"
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.name} />
                             </div>
@@ -87,7 +108,9 @@ export default function UserEdit({ user, roles }: Props) {
                                     type="email"
                                     placeholder="contoh@domain.com"
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -97,14 +120,25 @@ export default function UserEdit({ user, roles }: Props) {
                                 <Label htmlFor="role" className="required">
                                     Peran (Role)
                                 </Label>
-                                <Select value={data.role} onValueChange={(val) => setData('role', val)}>
+                                <Select
+                                    value={data.role}
+                                    onValueChange={(val) =>
+                                        setData('role', val)
+                                    }
+                                >
                                     <SelectTrigger id="role">
                                         <SelectValue placeholder="Pilih Peran" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {roles.map((r) => (
-                                            <SelectItem key={r.id} value={r.name}>
-                                                {r.name} {r.description ? `(${r.description})` : ''}
+                                            <SelectItem
+                                                key={r.id}
+                                                value={r.name}
+                                            >
+                                                {r.name}{' '}
+                                                {r.description
+                                                    ? `(${r.description})`
+                                                    : ''}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -121,7 +155,9 @@ export default function UserEdit({ user, roles }: Props) {
                                     id="password"
                                     placeholder="Biarkan kosong jika tidak ingin diubah"
                                     value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('password', e.target.value)
+                                    }
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -135,19 +171,36 @@ export default function UserEdit({ user, roles }: Props) {
                                     id="password_confirmation"
                                     placeholder="Ulangi kata sandi baru"
                                     value={data.password_confirmation}
-                                    onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'password_confirmation',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
-                                <InputError message={errors.password_confirmation} />
+                                <InputError
+                                    message={errors.password_confirmation}
+                                />
                             </div>
 
                             {/* Form Actions */}
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-sidebar-border/50">
-                                <Button variant="outline" asChild disabled={processing}>
+                            <div className="flex items-center justify-end gap-3 border-t border-sidebar-border/50 pt-4">
+                                <Button
+                                    variant="outline"
+                                    asChild
+                                    disabled={processing}
+                                >
                                     <Link href="/users">Batal</Link>
                                 </Button>
-                                <Button type="submit" disabled={processing} className="gap-2">
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="gap-2"
+                                >
                                     <Save className="h-4 w-4" />
-                                    {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                    {processing
+                                        ? 'Menyimpan...'
+                                        : 'Simpan Perubahan'}
                                 </Button>
                             </div>
                         </form>

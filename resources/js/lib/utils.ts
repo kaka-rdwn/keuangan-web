@@ -19,7 +19,10 @@ export function formatPaginationLabel(label: string): string {
         .replace(/Next\s*&raquo;/gi, 'Selanjutnya &raquo;');
 }
 
-export function formatDate(dateString?: string | null, includeTime: boolean = false): string {
+export function formatDate(
+    dateString?: string | null,
+    includeTime: boolean = false,
+): string {
     if (!dateString) {
         return '-';
     }

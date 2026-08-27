@@ -47,7 +47,10 @@ export function usePermission(): UsePermissionReturn {
     /**
      * Check if user has permission(s) or is Admin (Superadmin Bypass)
      */
-    const hasPermission = (permission: PermissionInput, matchAll = false): boolean => {
+    const hasPermission = (
+        permission: PermissionInput,
+        matchAll = false,
+    ): boolean => {
         if (!user) {
             return false;
         }

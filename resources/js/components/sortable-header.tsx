@@ -28,8 +28,8 @@ export function SortableHeader({
             {...props}
             onClick={() => onSort(column)}
             className={cn(
-                'cursor-pointer select-none transition-colors hover:text-foreground',
-                className
+                'cursor-pointer transition-colors select-none hover:text-foreground',
+                className,
             )}
         >
             <div className="inline-flex items-center gap-1.5 font-semibold">

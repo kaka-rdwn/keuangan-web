@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import {   usePermission } from '@/hooks/use-permission';
-import type {PermissionInput, RoleInput} from '@/hooks/use-permission';
+import { usePermission } from '@/hooks/use-permission';
+import type { PermissionInput, RoleInput } from '@/hooks/use-permission';
 
 export interface CanProps {
     permission?: PermissionInput;
@@ -10,7 +10,13 @@ export interface CanProps {
     children: ReactNode;
 }
 
-export function Can({ permission, role, matchAll = false, fallback = null, children }: CanProps) {
+export function Can({
+    permission,
+    role,
+    matchAll = false,
+    fallback = null,
+    children,
+}: CanProps) {
     const { hasPermission, hasRole } = usePermission();
 
     let isAuthorized = true;

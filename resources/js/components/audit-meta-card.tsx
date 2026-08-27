@@ -29,14 +29,16 @@ export function AuditMetaCard({
         typeof updatedBy === 'object' ? updatedBy?.name : updatedBy;
 
     return (
-        <Card className={`border-sidebar-border/70 bg-muted/20 dark:bg-muted/10 ${className}`}>
-            <CardHeader className="py-3 px-4">
-                <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <Card
+            className={`border-sidebar-border/70 bg-muted/20 dark:bg-muted/10 ${className}`}
+        >
+            <CardHeader className="px-4 py-3">
+                <CardTitle className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     <Clock className="h-3.5 w-3.5 text-primary" />
                     Informasi Audit / Metadata
                 </CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4 pt-0 text-xs text-muted-foreground">
+            <CardContent className="px-4 pt-0 pb-4 text-xs text-muted-foreground">
                 <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                     {showUsers && (
                         <div className="flex items-center gap-2">
