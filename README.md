@@ -41,18 +41,71 @@ Detail teknis mengenai arsitektur, skema data, dan keputusan desain dapat diakse
 
 ## ⚙️ Panduan Instalasi Lokal
 
+### Prasyarat
+- **PHP** >= 8.4
+- **Node.js** >= 20.x
+- **Composer**
+
+### Langkah Instalasi
+
 ```bash
 # 1. Clone repository
 git clone https://github.com/kaka-rdwn/keuangan-web.git
 cd keuangan-web
 
-# 2. Jalankan perintah setup otomatis (Install dependencies, .env, key, & migration)
+# 2. Jalankan perintah setup otomatis
+# (Otomatis menginstal paket, membuat file .env & database SQLite, generate key, menjalankan migrasi, serta build asset frontend)
 composer run setup
 
-# 3. (Opsional) Jalankan seeder untuk data awal/sample
+# 3. (Opsional) Jalankan seeder untuk mengisi data awal/sample
 php artisan db:seed
 
-# 4. Jalankan aplikasi (Server, Queue Listener, & Vite berjalan bersamaan)
+# 4. Jalankan lingkungan pengembangan
+# (Menjalankan HTTP Server, Queue Listener, & Vite HMR secara bersamaan)
 composer run dev
 ```
 
+### 📧 Konfigurasi Mailer (Pengiriman Email)
+
+Secara bawaan saat `composer run setup` dijalankan, file `.env` akan dibuat dari `.env.example`. Pastikan variabel lingkungan berikut sudah terkonfigurasi sesuai kebutuhan lokal Anda:
+
+```env
+MAIL_MAILER=log
+MAIL_SCHEME=null
+MAIL_HOST=127.0.0.1
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+> **Catatan:**
+> - Dengan `MAIL_MAILER=log`, email yang dikirimkan oleh sistem (seperti *reset password*) tidak dikirim ke alamat fisik, melainkan dicatat di file `storage/logs/laravel.log`.
+> - Setelah menjalankan `composer run dev`, aplikasi dapat langsung diakses di browser melalui **`http://127.0.0.1:8000`**.
+
+---
+
+## 🧪 Testing & Standardisasi Kode
+
+Untuk memastikan kualitas kode backend dan frontend tetap terjaga:
+
+```bash
+# Jalankan pengujian backend (Pest PHP)
+composer run test
+
+# Format kode PHP (Laravel Pint)
+composer run lint
+
+# Analisis statis kode PHP (PHPStan)
+composer run types:check
+
+# Menjalankan seluruh pemeriksaan CI secara lokal
+composer run ci:check
+```
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dilindungi di bawah lisensi [Apache-2.0](LICENSE).
