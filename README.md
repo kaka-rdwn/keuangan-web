@@ -16,9 +16,16 @@ Proyek **Keuangan Web** adalah aplikasi manajemen arus kas (*cashflow tracker*) 
 
 ## 🛠️ Tech Stack
 
-- **Framework Backend:** Laravel 13 (PHP 8.3+)
-- **Frontend Stack:** Inertia.js v3 & React 19
+- **Backend Framework:** Laravel 13 (PHP 8.4+)
+- **Authentication:** Laravel Fortify
+- **Frontend Framework:** Inertia.js v3, React 19, & TypeScript
+- **Styling & UI Components:** Tailwind CSS v4, Radix UI / Shadcn UI primitives, & Lucide Icons
+- **Data Visualization:** Recharts
 - **Database:** MySQL / PostgreSQL (Default: SQLite)
+- **Build Tool:** Vite 8
+- **Testing & Code Quality:** 
+  - Backend: Pest PHP v4, PHPStan (Larastan), Laravel Pint
+  - Frontend: ESLint v9, Prettier, Husky, & Lint-staged
 - **Architecture Pattern:** Clean Architecture, Action Classes, PHP 8 Backed Enums, & Custom Eloquent Casts
 
 ---
