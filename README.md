@@ -65,6 +65,13 @@ php artisan db:seed
 composer run dev
 ```
 
+### 🔑 Akun Default (Dev/Testing)
+
+Setelah menjalankan `php artisan db:seed`, Anda dapat masuk ke aplikasi menggunakan akun administrator bawaan:
+
+- **Email:** `admin@keuangan.test`
+- **Password:** `Admin#1234`
+
 ### 📧 Konfigurasi Mailer (Pengiriman Email)
 
 Secara bawaan saat `composer run setup` dijalankan, file `.env` akan dibuat dari `.env.example`. Pastikan variabel lingkungan berikut sudah terkonfigurasi sesuai kebutuhan lokal Anda:
