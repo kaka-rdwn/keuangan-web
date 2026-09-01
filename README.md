@@ -67,10 +67,13 @@ composer run dev
 
 ### 🔑 Akun Default (Dev/Testing)
 
-Setelah menjalankan `php artisan db:seed`, Anda dapat masuk ke aplikasi menggunakan akun administrator bawaan:
+Setelah menjalankan `php artisan db:seed`, Anda dapat masuk menggunakan kredensial bawaan berikut:
 
-- **Email:** `admin@keuangan.test`
-- **Password:** `Admin#1234`
+| Peran | Email | Password | Akses / Keterangan |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@keuangan.test` | `Admin#1234` | Akses penuh (*all permissions*) |
+| **Admin** | `admin@gmail.com` | `password` | Akses penuh (*all permissions*) |
+| **User** | `user@keuangan.test` | `User#1234` | Akses terbatas (*cashflow & view category*) |
 
 ### 📧 Konfigurasi Mailer (Pengiriman Email)
 
