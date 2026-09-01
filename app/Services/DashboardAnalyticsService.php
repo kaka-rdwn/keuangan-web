@@ -139,8 +139,8 @@ class DashboardAnalyticsService
             ->whereNotNull('transaction_date')
             ->distinct()
             ->pluck('year')
-            ->map(fn($y) => (int) $y)
-            ->filter(fn($y) => $y > 0)
+            ->map(fn ($y) => (int) $y)
+            ->filter(fn ($y) => $y > 0)
             ->toArray();
 
         $currentYear = (int) now()->year;
